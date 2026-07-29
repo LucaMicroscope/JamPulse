@@ -22,7 +22,7 @@ const menuItems = [
 export default function Sidebar() {
   return (
     // Drawer permanente posizionato a sinistra della pagina.
-    <Drawer anchor="left" open={true} variant="permanent">
+    <Drawer anchor="left" open={true} variant="permanent" sx={{ width: 240}}>
       <List>
         {/* Renderizza ogni voce del menu tramite il mapping dell'array. */}
         {menuItems.map((item) => (
