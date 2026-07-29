@@ -1,9 +1,10 @@
-import Sidebar from './components/Sidebar.jsx'
+import Home from "./pages/Home";
+
 
 export default function App() {
   return (
     <>
-      <Sidebar />
+      <Home />
     </>
   )
 }
