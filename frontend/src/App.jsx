@@ -1,9 +1,10 @@
+import Sidebar from './components/Sidebar.jsx'
 
+export default function App() {
+  return (
+    <>
+      <Sidebar />
+    </>
+  )
+}
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return }
-    
-
-export default App
