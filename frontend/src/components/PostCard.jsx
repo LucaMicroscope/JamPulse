@@ -13,7 +13,12 @@ export default function PostCard() {
     >
       {/* Header della card con avatar e nome utente */}
       <CardHeader
-        avatar={<Avatar src="" alt="UserAvatar" />}
+        avatar={
+          <Avatar
+            src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80"
+            alt="UserAvatar"
+          />
+        }
         title="Nome Utente"
       />
 

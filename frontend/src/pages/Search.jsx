@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import SearchIcon from '@mui/icons-material/Search';
 import { useState } from "react";
 import MultiSelectFilter from "../components/MultiSelectFilter";
+import UserCard from "../components/UserCard";
 
 // Elenco delle opzioni disponibili per il filtro degli strumenti musicali.
 const instruments = ["Arpa", "Basso", "Batteria", "Chitarra", "Pianoforte", "Voce"];
@@ -69,6 +70,10 @@ export default function Search() {
 
                 {/* Area destinata ai risultati della ricerca. */}
                 <Box>
+                    <UserCard />
+                    <UserCard />
+                    <UserCard />
+                    <UserCard />
                 </Box>
             </Box>
         </Box>
