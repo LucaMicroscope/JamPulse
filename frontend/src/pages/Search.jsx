@@ -33,11 +33,11 @@ export default function Search() {
             <Box sx={{flexGrow:1, margin: 2 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     {/* Barra di ricerca e filtri multipli organizzati in una riga. */}
-                    <Stack direction={"row"} spacing={1} sx={{justifyContent:'space-evenly'}}>
+                    <Stack direction={{sm:'column',md:'row'}} spacing={1} sx={{justifyContent:'space-evenly'}}>
                         <TextField
                             variant="outlined"
                             placeholder="Cerca"
-                            sx={{width:'33%'}}
+                            sx={{width:{sm:'100%',md:'33%'}}}
                             slotProps={{
                                 input: {
                                     startAdornment: (

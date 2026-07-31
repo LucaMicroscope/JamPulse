@@ -4,7 +4,7 @@ import { FormControl, InputLabel, MenuItem, OutlinedInput, Select } from "@mui/m
 // Viene utilizzato per filtrare elementi come strumenti musicali o altri valori multipli.
 export default function MultiSelectFilter({labelId, value, handleChange, label, options}) {
     return (
-        <FormControl sx={{ minWidth: 300 }}>
+        <FormControl sx={{  width:{sm:'100%',md:'33%'} }}>
             {/* Etichetta visualizzata sopra il campo di selezione. */}
             <InputLabel id={labelId}>{label}</InputLabel>
 
