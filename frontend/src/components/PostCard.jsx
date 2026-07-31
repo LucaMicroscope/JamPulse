@@ -9,7 +9,7 @@ export default function PostCard() {
   return (
     // Contenitore principale della scheda del post
     <Card
-      sx={{ flex: "1 1 300px", minWidth: 200, maxWidth: 500 }}
+      sx={{width:370 }}
     >
       {/* Header della card con avatar e nome utente */}
       <CardHeader
