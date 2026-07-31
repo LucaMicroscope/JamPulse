@@ -30,52 +30,57 @@ export default function Search() {
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             {/* Sidebar laterale della pagina di ricerca. */}
             <Sidebar />
+            <Box sx={{flexGrow:1, margin: 2 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                    {/* Barra di ricerca e filtri multipli organizzati in una riga. */}
+                    <Stack direction={"row"} spacing={1} sx={{justifyContent:'space-evenly'}}>
+                        <TextField
+                            variant="outlined"
+                            placeholder="Cerca"
+                            sx={{width:'33%'}}
+                            slotProps={{
+                                input: {
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <SearchIcon />
+                                        </InputAdornment>
+                                    )
+                                }
+                            }}>
+                        </TextField>
 
-            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                {/* Barra di ricerca e filtri multipli organizzati in una riga. */}
-                <Stack direction={"row"} spacing={1}>
-                    <TextField
-                        variant="outlined"
-                        placeholder="Cerca"
-                        fullWidth
-                        slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                )
-                            }
-                        }}>
-                    </TextField>
+                        {/* Filtro per selezionare più strumenti musicali. */}
+                        <MultiSelectFilter
+                            labelId='instrument-select-label'
+                            value={instrument}
+                            handleChange={instrumentChange}
+                            label='Strumenti Musicali'
+                            options={instruments}
+                        />
 
-                    {/* Filtro per selezionare più strumenti musicali. */}
-                    <MultiSelectFilter
-                        labelId='instrument-select-label'
-                        value={instrument}
-                        handleChange={instrumentChange}
-                        label='Strumenti Musicali'
-                        options={instruments}
-                    />
+                        {/* Filtro per selezionare più generi musicali. */}
+                        <MultiSelectFilter
+                            labelId='genre-select-label'
+                            value={genre}
+                            handleChange={genreChange}
+                            label='Generi Musicali'
+                            options={genres}
+                        />
+                    </Stack>
 
-                    {/* Filtro per selezionare più generi musicali. */}
-                    <MultiSelectFilter
-                        labelId='genre-select-label'
-                        value={genre}
-                        handleChange={genreChange}
-                        label='Generi Musicali'
-                        options={genres}
-                    />
-                </Stack>
-
-                {/* Area destinata ai risultati della ricerca. */}
-                <Box>
-                    <UserCard />
-                    <UserCard />
-                    <UserCard />
-                    <UserCard />
+                    {/* Area destinata ai risultati della ricerca. */}
+                    <Box sx={{mt:2,display: "flex", flexWrap: "wrap", justifyContent: 'start', gap: 5}}>
+                        <UserCard />
+                        <UserCard />
+                        <UserCard />
+                        <UserCard />
+                        <UserCard />
+                        <UserCard />
+                        <UserCard />
+                    </Box>
                 </Box>
             </Box>
+
         </Box>
     );
 }

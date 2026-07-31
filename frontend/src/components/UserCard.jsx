@@ -7,7 +7,7 @@ const userGenres = ['Rock', 'Metal'];
 
 export default function UserCard() {
     return (
-        <Card>
+        <Card sx={{ width: 370 }}>
             {/* Area cliccabile che rappresenta il profilo dell'utente. */}
             <CardActionArea>
                 {/* Header della card con il nome utente. */}
@@ -16,7 +16,7 @@ export default function UserCard() {
                 {/* Immagine profilo dell'utente. */}
                 <CardMedia
                     component="img"
-                    height="200"
+                    height="220"
                     image="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80"
                     alt="Profile Picture"
                 />
@@ -41,8 +41,8 @@ export default function UserCard() {
 
             {/* Azioni disponibili nella scheda utente. */}
             <CardActions>
-                <Button variant="contained">Segui</Button>
-                <Button variant="contained">Invia un messaggio</Button>
+                <Button variant="contained" sx={{width:'50%'}}>Segui</Button>
+                <Button variant="contained" sx={{width:'50%'}}>Scrivi</Button>
             </CardActions>
         </Card>
     );

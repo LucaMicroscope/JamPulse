@@ -8,9 +8,7 @@ import Typography from "@mui/material/Typography";
 export default function PostCard() {
   return (
     // Contenitore principale della scheda del post
-    <Card
-      sx={{width:370 }}
-    >
+    <Card sx={{ width: 370 }}    >
       {/* Header della card con avatar e nome utente */}
       <CardHeader
         avatar={
