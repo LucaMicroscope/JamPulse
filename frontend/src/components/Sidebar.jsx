@@ -11,7 +11,8 @@ import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import LogoutIcon from '@mui/icons-material/Logout';
 import CreateIcon from '@mui/icons-material/Create';
 
-// Definisce gli elementi della sidebar come dati, così è più semplice gestire la navigazione.
+// Definisce le voci della sidebar come un array di oggetti.
+// Ogni voce contiene l'etichetta e l'icona da visualizzare.
 const menuItems = [
   { label: "JamPulse", icon: <AppleIcon /> },
   { label: "Home", icon: <HomeRoundedIcon /> },
@@ -22,17 +23,34 @@ const menuItems = [
   { label: "Crea Post", icon: <CreateIcon /> },
 ];
 
+// Larghezze del drawer per i breakpoint "xs" e "sm".
+const widthXs = 60;
+const widthSm = 160;
+
 // Componente principale della barra laterale dell'applicazione.
 export default function Sidebar() {
   return (
     // Drawer permanente posizionato a sinistra della pagina.
-    <Drawer anchor="left" open={true} variant="permanent" sx={{ width: 150}}>
+    <Drawer
+      anchor="left"
+      open={true}
+      variant="permanent"
+      sx={{
+        width: { xs: widthXs, sm: widthSm },
+        "& .MuiDrawer-paper": { width: { xs: widthXs, sm: widthSm } },
+      }}
+    >
       <List>
-        {/* Renderizza ogni voce del menu tramite il mapping dell'array. */}
+        {/* Crea un pulsante per ogni voce del menu. */}
         {menuItems.map((item) => (
-          <ListItemButton key={item.label}>
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.label} />
+          <ListItemButton key={item.label} sx={{ justifyContent: 'center' }}>
+            {/* Icona centrata all'interno del bottone. */}
+            <ListItemIcon sx={{ justifyContent: 'center' }}>{item.icon}</ListItemIcon>
+            {/* Mostra il testo solo su schermi medi e grandi. */}
+            <ListItemText
+              primary={item.label}
+              sx={{ display: { xs: 'none', sm: 'block' } }}
+            />
           </ListItemButton>
         ))}
       </List>
