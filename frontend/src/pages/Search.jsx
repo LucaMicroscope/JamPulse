@@ -4,6 +4,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useState } from "react";
 import MultiSelectFilter from "../components/MultiSelectFilter";
 import UserCard from "../components/UserCard";
+import SearchBar from "../components/SearchBar";
 
 // Elenco delle opzioni disponibili per il filtro degli strumenti musicali.
 const instruments = ["Arpa", "Basso", "Batteria", "Chitarra", "Pianoforte", "Voce"];
@@ -12,6 +13,7 @@ const genres = ["Rock", "Pop", "Jazz", "Blues", "Metal", "Funk", "Classica", "Hi
 
 // Pagina di ricerca degli utenti.
 // Qui l'utente può cercare musicisti e filtrare i risultati in base a strumenti e generi musicali.
+// Ho organizzato la pagina in due blocchi principali: il controllo di ricerca e la sezione dei risultati.
 export default function Search() {
     // Stato che contiene gli strumenti selezionati dall'utente.
     const [instrument, setInstrument] = useState([]);
@@ -37,20 +39,8 @@ export default function Search() {
                 {/* Barra di ricerca e filtri multipli organizzati in una riga responsiva. */}
                 {/* Ho usato uno Stack orizzontale con comportamento diverso in base alla dimensione dello schermo. */}
                 <Stack direction={{ sm: 'column', md: 'row' }} spacing={1} sx={{ justifyContent: 'center', mb: 3 }}>
-                    <TextField
-                        variant="outlined"
-                        placeholder="Cerca"
-                        sx={{ width: '100%' }}
-                        slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <SearchIcon />
-                                    </InputAdornment>
-                                )
-                            }
-                        }}>
-                    </TextField>
+                    {/* Componente dedicato alla barra di ricerca testuale. */}
+                    <SearchBar />
 
                     {/* Filtro per selezionare più strumenti musicali. */}
                     <MultiSelectFilter
