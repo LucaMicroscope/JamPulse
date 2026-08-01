@@ -1,0 +1,6 @@
+Models: User, Post, Chat, Messaggio
+
+User: username*, mail*, password*, bio, instruments, genres, following, followers , avatarURL
+Post: Author(User)*, description*, mediaURL*, timestamp*
+Chat: Partecipants* (User1, User2)
+Messagge: ChatID*, Sender(User)*, Content*
