@@ -13,6 +13,7 @@ import CreateIcon from '@mui/icons-material/Create';
 
 // Definisce le voci della sidebar come un array di oggetti.
 // Ogni voce contiene l'etichetta e l'icona da visualizzare.
+// Ho scelto questa struttura perché rende il menu facilmente espandibile e mantenibile.
 const menuItems = [
   { label: "JamPulse", icon: <AppleIcon /> },
   { label: "Home", icon: <HomeRoundedIcon /> },
@@ -28,9 +29,11 @@ const widthXs = 60;
 const widthSm = 160;
 
 // Componente principale della barra laterale dell'applicazione.
+// Fornisce la navigazione principale e si adatta in base alla dimensione dello schermo.
 export default function Sidebar() {
   return (
     // Drawer permanente posizionato a sinistra della pagina.
+    // Ho usato un drawer fisso perché la navigazione deve restare disponibile durante la navigazione dell'app.
     <Drawer
       anchor="left"
       open={true}

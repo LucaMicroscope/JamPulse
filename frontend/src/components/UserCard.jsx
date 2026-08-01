@@ -1,14 +1,18 @@
 import { Button, Card, CardActionArea, CardActions, CardContent, CardHeader, CardMedia, Stack, Typography } from "@mui/material";
 
 // Dati di esempio utilizzati per visualizzare temporaneamente il profilo utente.
+// Li ho inseriti qui in modo da avere un mock rapido per la UI mentre la logica reale non è ancora implementata.
 const username = 'Nome Utente';
 const userInstruments = ['Chitarra', 'Basso'];
 const userGenres = ['Rock', 'Metal'];
 
+// Componente che rappresenta una scheda utente nella pagina di ricerca.
+// Mostra informazioni essenziali come nome, strumenti e generi musicali, oltre a due azioni rapide.
 export default function UserCard() {
     return (
         <Card sx={{ width: 370 }}>
             {/* Area cliccabile che rappresenta il profilo dell'utente. */}
+            {/* Ho usato CardActionArea per dare all'utente un'interazione immediata e un feedback visivo. */}
             <CardActionArea>
                 {/* Header della card con il nome utente. */}
                 <CardHeader title={username} />
@@ -41,8 +45,8 @@ export default function UserCard() {
 
             {/* Azioni disponibili nella scheda utente. */}
             <CardActions>
-                <Button variant="contained" sx={{width:'50%'}}>Segui</Button>
-                <Button variant="contained" sx={{width:'50%'}}>Scrivi</Button>
+                <Button variant="contained" sx={{ width: '50%' }}>Segui</Button>
+                <Button variant="contained" sx={{ width: '50%' }}>Scrivi</Button>
             </CardActions>
         </Card>
     );
