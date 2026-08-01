@@ -4,7 +4,7 @@ import { Stack } from "@mui/material";
 
 export default function Home() {
     return (
-        <Stack direction='row' spacing={0}>
+        <Stack direction='row'>
             <Sidebar />
             <Stack direction='row' spacing={3} useFlexGap sx={{flexWrap:'wrap', justifyContent:'center'}} >
                 <PostCard />
