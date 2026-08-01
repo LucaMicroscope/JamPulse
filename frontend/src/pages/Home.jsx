@@ -1,12 +1,12 @@
 import PostCard from "../components/PostCard";
 import Sidebar from "../components/Sidebar";
-import { Box } from "@mui/material";
+import { Stack } from "@mui/material";
 
 export default function Home() {
     return (
-        <Box sx={{ display: "flex", flexDirection: "row", }}>
+        <Stack direction='row' spacing={0}>
             <Sidebar />
-            <Box sx={{margin:2, display: "flex", flexWrap: "wrap", justifyContent: 'start', gap: 5 }}>
+            <Stack direction='row' spacing={3} useFlexGap sx={{flexWrap:'wrap', justifyContent:'center'}} >
                 <PostCard />
                 <PostCard />
                 <PostCard />
@@ -14,8 +14,8 @@ export default function Home() {
                 <PostCard />
                 <PostCard />
                 <PostCard />
-            </Box>
-        </Box>
+            </Stack>
+        </Stack>
 
 
     )

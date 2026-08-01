@@ -27,13 +27,13 @@ export default function Search() {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+        <Stack direction='row'>
             {/* Sidebar laterale della pagina di ricerca. */}
             <Sidebar />
-            <Box sx={{ flexGrow: 1, margin: 2 }}>
-                <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            
+                <Stack >
                     {/* Barra di ricerca e filtri multipli organizzati in una riga. */}
-                    <Stack direction={{ sm: 'column', md: 'row' }} spacing={1} sx={{ justifyContent: 'space-evenly' }}>
+                    <Stack direction={{ sm: 'column', md: 'row' }} spacing={1} sx={{ justifyContent: 'center', mb:3}}>
                         <TextField
                             variant="outlined"
                             placeholder="Cerca"
@@ -69,7 +69,7 @@ export default function Search() {
                     </Stack>
 
                     {/* Area destinata ai risultati della ricerca. */}
-                    <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", justifyContent: 'start', gap: 5 }}>
+                    <Stack direction='row' spacing={3} useFlexGap sx={{flexWrap:'wrap', justifyContent:'center'}} >
                         <UserCard />
                         <UserCard />
                         <UserCard />
@@ -77,10 +77,10 @@ export default function Search() {
                         <UserCard />
                         <UserCard />
                         <UserCard />
-                    </Box>
-                </Box>
-            </Box>
+                    </Stack>
+                </Stack>
+            
 
-        </Box>
+        </Stack>
     );
 }
