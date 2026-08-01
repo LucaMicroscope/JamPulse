@@ -2,9 +2,9 @@ import { FormControl, InputLabel, MenuItem, OutlinedInput, Select } from "@mui/m
 
 // Componente riutilizzabile per selezionare più opzioni da una lista.
 // Viene utilizzato per filtrare elementi come strumenti musicali o altri valori multipli.
-export default function MultiSelectFilter({labelId, value, handleChange, label, options}) {
+export default function MultiSelectFilter({ labelId, value, handleChange, label, options }) {
     return (
-        <FormControl sx={{  width:{sm:'100%',md:'33%'} }}>
+        <FormControl sx={{ width: '100%' }}>
             {/* Etichetta visualizzata sopra il campo di selezione. */}
             <InputLabel id={labelId}>{label}</InputLabel>
 

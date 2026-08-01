@@ -30,14 +30,14 @@ export default function Search() {
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
             {/* Sidebar laterale della pagina di ricerca. */}
             <Sidebar />
-            <Box sx={{flexGrow:1, margin: 2 }}>
+            <Box sx={{ flexGrow: 1, margin: 2 }}>
                 <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                     {/* Barra di ricerca e filtri multipli organizzati in una riga. */}
-                    <Stack direction={{sm:'column',md:'row'}} spacing={1} sx={{justifyContent:'space-evenly'}}>
+                    <Stack direction={{ sm: 'column', md: 'row' }} spacing={1} sx={{ justifyContent: 'space-evenly' }}>
                         <TextField
                             variant="outlined"
                             placeholder="Cerca"
-                            sx={{width:{sm:'100%',md:'33%'}}}
+                            sx={{ width: '100%' }}
                             slotProps={{
                                 input: {
                                     startAdornment: (
@@ -69,7 +69,7 @@ export default function Search() {
                     </Stack>
 
                     {/* Area destinata ai risultati della ricerca. */}
-                    <Box sx={{mt:2,display: "flex", flexWrap: "wrap", justifyContent: 'start', gap: 5}}>
+                    <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", justifyContent: 'start', gap: 5 }}>
                         <UserCard />
                         <UserCard />
                         <UserCard />
