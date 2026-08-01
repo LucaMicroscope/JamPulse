@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, Tab, FormControl, TextField, Button } from "@mui/material";
+import { Box, Stack, Typography, Tab, TextField, Button } from "@mui/material";
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
@@ -10,6 +10,8 @@ const instruments = ["Arpa", "Basso", "Batteria", "Chitarra", "Pianoforte", "Voc
 // Elenco delle opzioni disponibili per il filtro dei generi musicali.
 const genres = ["Rock", "Pop", "Jazz", "Blues", "Metal", "Funk", "Classica", "Hip Hop"];
 
+// Pagina di accesso e registrazione dell'applicazione.
+// Qui vengono mostrati i due form principali e il passaggio tra le due modalità avviene tramite tab.
 export default function Login() {
     // Stato che controlla quale tab è attiva: accesso o registrazione.
     const [tabValue, setTabValue] = useState('1');
@@ -21,7 +23,7 @@ export default function Login() {
     //Variabili per il MultiSelectFilter (da sistemare perché duplicati da Search.jsx)
     // Stato che contiene gli strumenti selezionati dall'utente.
     const [instrument, setInstrument] = useState([]);
-    // Stato che contiene i generi selezionati dall'utente.
+    // Stato che contiene i generi selezionati dall'utente nella fase di registrazione.
     const [genre, setGenre] = useState([]);
 
     // Aggiorna lo stato degli strumenti ogni volta che l'utente modifica la selezione.
@@ -48,14 +50,12 @@ export default function Login() {
         // Box principale che contiene tutto il contenuto della pagina di accesso.
         // È usata come contenitore flessibile per organizzare il lato testo e il lato form.
         <Box sx={{ display: 'flex', flexDirection: 'row' }}>
-            {/* Stack verticale che contiene il testo introduttivo  */}
-            
+            {/* Stack verticale che contiene il testo introduttivo dell'applicazione. */}
             <Stack direction={"column"} sx={{ width: '50%' }}>
                 {/* Titolo principale della pagina. */}
                 <Typography component='h1' variant='h2'>Benvenuto su JamPulse!</Typography>
 
                 {/* Descrizione introduttiva dell'applicazione. */}
-                
                 <Typography component='h2' variant='h6'>
                     Connettiti con i musicisti intorno a te.
                     Che tu stia cercando la voce perfetta per la tua band,
@@ -64,8 +64,7 @@ export default function Login() {
                 </Typography>
             </Stack>
 
-            {/* Box sul lato destro che contiene il form di accesso/registrazione. */}
-            
+            {/* Box sul lato destro che contiene il form di accesso e registrazione. */}
             <Box sx={{ width: '50%' }}>
                 {/* Contesto dei tab che gestisce lo stato attivo tra accesso e registrazione. */}
                 <TabContext value={tabValue}>
