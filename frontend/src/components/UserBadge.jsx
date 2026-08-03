@@ -7,7 +7,7 @@ import { Stack, Avatar, Typography, ButtonBase } from "@mui/material";
 export default function UserBadge() {
     // Dimensione dell'avatar all'interno del badge.
     // Ho scelto un valore fisso per mantenere la UI uniforme tra tutti i contatti.
-    const avatarSize = 100;
+    const avatarSize = 80;
 
     return (
         // ButtonBase rende l'intera area cliccabile e migliora l'esperienza interattiva.
