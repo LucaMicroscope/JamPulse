@@ -13,7 +13,7 @@ export default function UserBadge() {
         // ButtonBase rende l'intera area cliccabile e migliora l'esperienza interattiva.
         <ButtonBase>
             {/* Layout orizzontale con avatar e nome utente allineati verticalmente al centro. */}
-            <Stack direction='row' spacing={3} sx={{ alignItems: 'center', justifyContent: 'center', padding: 1 }}>
+            <Stack direction='row' spacing={3} sx={{ alignItems: 'center', justifyContent: 'center', paddingY:1 }}>
                 <Avatar
                     alt="userAvatar"
                     src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80"

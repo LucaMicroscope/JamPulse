@@ -1,6 +1,7 @@
 import Chat from "./pages/Chat";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 
@@ -12,6 +13,7 @@ export default function App() {
       <Search />
       <Profile />
       <Chat />
+      <PostDetail />
     </>
   )
 }
