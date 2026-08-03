@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import SearchBar from "../components/SearchBar";
 import UserBadge from "../components/UserBadge";
 import SendIcon from '@mui/icons-material/Send';
+import MessageBubble from "../components/MessageBubble";
 
 // Pagina dedicata alla sezione chat dell'applicazione.
 // Mostra una lista di contatti o conversazioni affiancata alla sidebar principale.
@@ -28,15 +29,8 @@ export default function Chat() {
             <Stack sx={{ flexGrow: 1 }}>
                 <UserBadge />
                 <Divider />
-                <Box >
-                    <h1>Qui andranno i messaggi</h1>
-                    <h1>Qui andranno i messaggi</h1>
-                    <h1>Qui andranno i messaggi</h1>
-                    <h1>Qui andranno i messaggi</h1>
-                    <h1>Qui andranno i messaggi</h1>
-                    <h1>Qui andranno i messaggi</h1>
-                    <h1>Qui andranno i messaggi</h1>
-                    <h1>Qui andranno i messaggi</h1>
+                <Box sx={{ flexGrow: 1 }}>
+                    <MessageBubble />
                 </Box>
                 <Stack direction='row' >
                     <TextField fullWidth size="small" placeholder="Scrivi un messaggio..." />
