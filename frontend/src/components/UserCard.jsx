@@ -19,10 +19,9 @@ export default function UserCard() {
 
                 {/* Immagine profilo dell'utente. */}
                 <CardMedia
-                    component="img"
-                    height="220"
+                    component="img"                    
                     image="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80"
-                    alt="Profile Picture"
+                    alt="Profile Picture"                    
                 />
 
                 {/* Contenuto principale della scheda con strumenti e generi musicali. */}
