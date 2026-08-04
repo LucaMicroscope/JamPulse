@@ -12,6 +12,7 @@ const genres = ["Rock", "Pop", "Jazz", "Blues", "Metal", "Funk", "Classica", "Hi
 
 // Pagina di accesso e registrazione dell'applicazione.
 // Qui vengono mostrati i due form principali e il passaggio tra le due modalità avviene tramite tab.
+// La pagina è divisa in due blocchi: testo introduttivo a sinistra e form di autenticazione a destra.
 export default function Login() {
     // Stato che controlla quale tab è attiva: accesso o registrazione.
     const [tabValue, setTabValue] = useState('1');
@@ -49,9 +50,9 @@ export default function Login() {
     return (
         // Box principale che contiene tutto il contenuto della pagina di accesso.
         // È usata come contenitore flessibile per organizzare il lato testo e il lato form.
-        <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, height: '97vh' }}>
             {/* Stack verticale che contiene il testo introduttivo dell'applicazione. */}
-            <Stack direction={"column"} sx={{ width: '50%' }}>
+            <Stack sx={{ width: '50%', justifyContent: 'center' }}>
                 {/* Titolo principale della pagina. */}
                 <Typography component='h1' variant='h2'>Benvenuto su JamPulse!</Typography>
 
@@ -65,14 +66,16 @@ export default function Login() {
             </Stack>
 
             {/* Box sul lato destro che contiene il form di accesso e registrazione. */}
-            <Box sx={{ width: '50%' }}>
+            <Box sx={{ width: '50%', alignContent: 'center' }}>
                 {/* Contesto dei tab che gestisce lo stato attivo tra accesso e registrazione. */}
                 <TabContext value={tabValue}>
-                    {/* Lista dei tab che consente di passare da una vista all'altra. */}
-                    <TabList onChange={tabChange}>
-                        <Tab label='ACCEDI' value='1'></Tab>
-                        <Tab label='REGISTRATI' value='2'></Tab>
-                    </TabList>
+                    {/* Box che contiene i tab di selezione tra accesso e registrazione. */}
+                    <Box sx={{ justifyItems: 'center' }}>
+                        <TabList onChange={tabChange}>
+                            <Tab label='ACCEDI' value='1'></Tab>
+                            <Tab label='REGISTRATI' value='2'></Tab>
+                        </TabList>
+                    </Box>
 
                     {/* Pannello dedicato al login. */}
                     <TabPanel value='1'>

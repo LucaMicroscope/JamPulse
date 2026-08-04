@@ -7,19 +7,23 @@ import MessageBubble from "../components/MessageBubble";
 
 // Pagina dedicata alla sezione chat dell'applicazione.
 // Qui l'utente può selezionare una conversazione, vedere i messaggi e inviarne di nuovi.
+// La pagina è strutturata in tre blocchi principali: sidebar, lista conversazioni e area conversazione attiva.
 export default function Chat() {
+    // Dati mock usati temporaneamente per visualizzare una conversazione di esempio.
     const mockMessages = [
         { id: 1, text: "Ciao! Ho visto il tuo profilo, ti va di suonare insieme?", isMine: false },
         { id: 2, text: "Certo, mi farebbe molto piacere! Che strumenti suoni?", isMine: true },
         { id: 3, text: "Suono la chitarra elettrica, soprattutto rock e metal 🎸", isMine: false },
         { id: 4, text: "Perfetto, io suono il basso. Possiamo organizzare una jam session!", isMine: true },
     ];
+
     return (
         // Layout principale: sidebar laterale a sinistra e contenuto della chat a destra.
-        <Stack direction='row' spacing={1}>
+        <Stack direction='row' spacing={1} sx={{ height: '98vh' }}>
             <Sidebar />
 
             {/* Colonna laterale con ricerca conversazioni e lista dei contatti. */}
+            {/* Questa sezione serve a navigare tra le chat esistenti prima di aprire una conversazione. */}
             <Stack spacing={3} sx={{ padding: 1, borderRight: 'thin groove' }}>
                 {/* Barra di ricerca per trovare rapidamente una conversazione o un contatto. */}
                 <SearchBar />
@@ -33,6 +37,9 @@ export default function Chat() {
                     <UserBadge />
                 </Stack>
             </Stack>
+
+            {/* Area principale della conversazione attiva. */}
+            {/* Qui vengono mostrati i messaggi e il campo di input per scriverne di nuovi. */}
             <Stack sx={{ flexGrow: 1 }}>
                 {/* Badge della conversazione attiva o titolo della chat. */}
                 <UserBadge />
