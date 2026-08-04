@@ -1,4 +1,5 @@
 import { Button, Card, CardActionArea, CardActions, CardContent, CardHeader, CardMedia, Stack, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 // Dati di esempio utilizzati per visualizzare temporaneamente il profilo utente.
 // Li ho inseriti qui in modo da avere un mock rapido per la UI mentre la logica reale non è ancora implementata.
@@ -9,11 +10,12 @@ const userGenres = ['Rock', 'Metal'];
 // Componente che rappresenta una scheda utente nella pagina di ricerca.
 // Mostra informazioni essenziali come nome, strumenti e generi musicali, oltre a due azioni rapide.
 export default function UserCard() {
+    const navigate=useNavigate()
     return (
         <Card sx={{ width: 370 }}>
             {/* Area cliccabile che rappresenta il profilo dell'utente. */}
             {/* Ho usato CardActionArea per dare all'utente un'interazione immediata e un feedback visivo. */}
-            <CardActionArea>
+            <CardActionArea onClick={()=>navigate('/profile')}>
                 {/* Header della card con il nome utente. */}
                 <CardHeader title={username} />
 
