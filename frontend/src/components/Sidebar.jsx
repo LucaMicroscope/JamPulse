@@ -11,21 +11,21 @@ import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import LogoutIcon from '@mui/icons-material/Logout';
 import CreateIcon from '@mui/icons-material/Create';
 import { NavLink } from "react-router-dom";
+import { Icon, Stack, Typography } from "@mui/material";
 
 // Definisce le voci della sidebar come un array di oggetti.
-// Ogni voce contiene l'etichetta e l'icona da visualizzare.
+// Ogni voce contiene l'etichetta, l'icona e il percorso associato alla navigazione.
 // Ho scelto questa struttura perché rende il menu facilmente espandibile e mantenibile.
 const menuItems = [
-  { label: "JamPulse", icon: <AppleIcon />, path: '/' },
   { label: "Home", icon: <HomeRoundedIcon />, path: '/' },
   { label: "Cerca", icon: <SearchIcon />, path: '/search' },
   { label: "Chat", icon: <ChatBubbleOutlineRoundedIcon />, path: '/chat' },
   { label: "Profilo", icon: <AccountBoxRoundedIcon />, path: '/profile' },
-  { label: "Logout", icon: <LogoutIcon />, path: '/login' },
-  { label: "Crea Post", icon: <CreateIcon />, path: '/' },
+  { label: "Crea Post", icon: <CreateIcon />, path: '/create' }
 ];
 
 // Larghezze del drawer per i breakpoint "xs" e "sm".
+// Questi valori definiscono la larghezza della sidebar in base alla dimensione dello schermo.
 const widthXs = 60;
 const widthSm = 160;
 
@@ -44,28 +44,59 @@ export default function Sidebar() {
         "& .MuiDrawer-paper": { width: { xs: widthXs, sm: widthSm } },
       }}
     >
-      <List>
-        {/* Crea un pulsante per ogni voce del menu. */}
-        {menuItems.map((item) => (
+      {/* Contenitore principale della sidebar con layout verticale e spazio tra le sezioni. */}
+      <Stack sx={{ justifyContent: 'space-between', flexGrow: 1 }}>
+        {/* Sezione superiore: brand o home link. */}
+        <Stack>
           <NavLink
-            to={item.path}
-            key={item.label}
+            to='/'
             style={{
               textDecoration: 'none',
-              color:'inherit'
-            }}>
-            <ListItemButton sx={{ justifyContent: 'center' }}>
-              {/* Icona centrata all'interno del bottone. */}
-              <ListItemIcon sx={{ justifyContent: 'center' }}>{item.icon}</ListItemIcon>
-              {/* Mostra il testo solo su schermi medi e grandi. */}
-              <ListItemText
-                primary={item.label}
-                sx={{ display: { xs: 'none', sm: 'block' } }}
-              />
+              color: 'inherit'
+            }}
+          >
+            <ListItemButton>
+              <ListItemIcon><AppleIcon /></ListItemIcon>
+              <ListItemText sx={{ display: { xs: 'none', sm: 'block' } }}>JamPulse</ListItemText>
             </ListItemButton>
           </NavLink>
-        ))}
-      </List>
+        </Stack>
+
+        {/* Sezione centrale: elenco delle voci di navigazione. */}
+        <Stack>
+          <List>
+            {/* Crea un pulsante per ogni voce del menu. */}
+            {menuItems.map((item) => (
+              <NavLink
+                to={item.path}
+                key={item.label}
+                style={{
+                  textDecoration: 'none',
+                  color: 'inherit'
+                }}
+              >
+                <ListItemButton sx={{ justifyContent: 'center' }}>
+                  {/* Icona centrata all'interno del bottone. */}
+                  <ListItemIcon sx={{ justifyContent: 'center' }}>{item.icon}</ListItemIcon>
+                  {/* Mostra il testo solo su schermi medi e grandi. */}
+                  <ListItemText
+                    primary={item.label}
+                    sx={{ display: { xs: 'none', sm: 'block' } }}
+                  />
+                </ListItemButton>
+              </NavLink>
+            ))}
+          </List>
+        </Stack>
+
+        {/* Sezione inferiore: azione di logout. */}
+        <Stack>
+          <ListItemButton>
+            <ListItemIcon><LogoutIcon /></ListItemIcon>
+            <ListItemText sx={{ display: { xs: 'none', sm: 'block' } }}>Logout</ListItemText>
+          </ListItemButton>
+        </Stack>
+      </Stack>
     </Drawer>
   );
 }
