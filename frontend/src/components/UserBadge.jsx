@@ -1,7 +1,5 @@
 import { Stack, Avatar, Typography, ButtonBase } from "@mui/material";
 
-
-
 // Componente che rappresenta un singolo contatto o conversazione nella lista chat.
 // Mostra avatar e nome utente in modo compatto e cliccabile.
 export default function UserBadge() {

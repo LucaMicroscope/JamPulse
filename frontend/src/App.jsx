@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import PostDetail from "./pages/PostDetail";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
+import CreatePost from "./pages/CreatePost";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="/posts/:id" element={<PostDetail />} />
+        <Route path="/create" element={<CreatePost />} />
       </Routes>
 
     </>
