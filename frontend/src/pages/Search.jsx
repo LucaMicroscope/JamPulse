@@ -1,6 +1,4 @@
-import { InputAdornment, Stack, TextField } from "@mui/material";
-import Sidebar from "../components/Sidebar";
-import SearchIcon from '@mui/icons-material/Search';
+import { Stack } from "@mui/material";
 import { useState } from "react";
 import MultiSelectFilter from "../components/MultiSelectFilter";
 import UserCard from "../components/UserCard";
@@ -31,13 +29,12 @@ export default function Search() {
     };
 
     return (
-        <Stack direction='row'>
-            {/* Sidebar laterale della pagina di ricerca. */}
-            <Sidebar />
+        
 
             <Stack>
-                {/* Barra di ricerca e filtri multipli organizzati in una riga responsiva. */}
-                {/* Ho usato uno Stack orizzontale con comportamento diverso in base alla dimensione dello schermo. */}
+                {/* Barra di ricerca e filtri multipli organizzati in una riga responsiva.
+                    Ho usato Stack perché i controlli devono essere allineati in modo semplice
+                    e adattarsi a schermi diversi, passando da una colonna a una riga in base alla dimensione. */}
                 <Stack direction={{ sm: 'column', md: 'row' }} spacing={1} sx={{ justifyContent: 'center', mb: 3 }}>
                     {/* Componente dedicato alla barra di ricerca testuale. */}
                     <SearchBar />
@@ -61,8 +58,9 @@ export default function Search() {
                     />
                 </Stack>
 
-                {/* Area destinata ai risultati della ricerca. */}
-                {/* Ho raggruppato le card in uno Stack con wrapping per ottenere un layout più flessibile. */}
+                {/* Area destinata ai risultati della ricerca.
+                    Anche qui Stack è utile perché le card dei profili possono essere disposte in modo fluido,
+                    andando a capo quando lo spazio è insufficiente e mantenendo una spaziatura uniforme. */}
                 <Stack direction='row' spacing={3} useFlexGap sx={{ flexWrap: 'wrap', justifyContent: 'center' }} >
                     <UserCard />
                     <UserCard />
@@ -73,6 +71,6 @@ export default function Search() {
                     <UserCard />
                 </Stack>
             </Stack>
-        </Stack>
+        
     );
 }

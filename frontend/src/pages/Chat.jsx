@@ -1,5 +1,4 @@
 import { Box, Divider, IconButton, Stack, TextField } from "@mui/material";
-import Sidebar from "../components/Sidebar";
 import SearchBar from "../components/SearchBar";
 import UserBadge from "../components/UserBadge";
 import SendIcon from '@mui/icons-material/Send';
@@ -18,18 +17,14 @@ export default function Chat() {
     ];
 
     return (
-        // Layout principale: sidebar laterale a sinistra e contenuto della chat a destra.
-        <Stack direction='row' spacing={1} sx={{ height: '98vh' }}>
-            <Sidebar />
-
-            {/* Colonna laterale con ricerca conversazioni e lista dei contatti. */}
-            {/* Questa sezione serve a navigare tra le chat esistenti prima di aprire una conversazione. */}
-            <Stack spacing={3} sx={{ padding: 1, borderRight: 'thin groove' }}>
+        <Stack direction={"row"} sx={{ height: '100%' }}>
+            <Stack spacing={3} sx={{ padding: 1, borderRight: 'thin groove', width: 320, flexShrink: 0 }}>
                 {/* Barra di ricerca per trovare rapidamente una conversazione o un contatto. */}
                 <SearchBar />
 
-                {/* Lista dei badge utente con separatori tra gli elementi. */}
-                {/* Questa sezione rappresenta la lista di conversazioni disponibili. */}
+                {/* Lista dei badge utente con separatori tra gli elementi.
+                    Questa sezione rappresenta la lista di conversazioni disponibili e
+                    viene gestita come una colonna ordinata per mantenere i contatti leggibili. */}
                 <Stack divider={<Divider />}>
                     <UserBadge />
                     <UserBadge />
@@ -38,14 +33,16 @@ export default function Chat() {
                 </Stack>
             </Stack>
 
-            {/* Area principale della conversazione attiva. */}
-            {/* Qui vengono mostrati i messaggi e il campo di input per scriverne di nuovi. */}
+            {/* Area principale della conversazione attiva.*/}
             <Stack sx={{ flexGrow: 1 }}>
                 {/* Badge della conversazione attiva o titolo della chat. */}
                 <UserBadge />
                 <Divider />
 
-                {/* Contenitore dei messaggi della conversazione. */}
+                {/* Contenitore dei messaggi della conversazione.
+                    Ho scelto Box invece di Stack perché il blocco dei messaggi deve crescere
+                    in altezza in modo flessibile e supportare un overflow verticale senza
+                    compromettere il layout del resto della pagina. */}
                 <Box sx={{ flexGrow: 1 }}>
                     {mockMessages.map((message) =>
                         <MessageBubble key={message.id} text={message.text} isMine={message.isMine} />
