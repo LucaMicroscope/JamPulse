@@ -41,16 +41,29 @@ Il backend esporrà una serie di API RESTful prefissate dal percorso `/api/v1`. 
 | `PUT` | `/api/v1/users/me` | Aggiorna le informazioni del profilo (strumenti, generi, bio). | Sì |
 | `GET` | `/api/v1/users` | Ricerca e filtra gli utenti registrati tramite query parameters (`?instrument=...&genre=...`). | Sì |
 | `GET` | `/api/v1/users/:id` | Recupera il profilo pubblico di uno specifico utente tramite il suo ID. | Sì |
+| `GET` | `/api/v1/users/:id/posts` | Recupera tutti i post pubblicati da un utente specifico. | Sì |
 | `POST` | `/api/v1/users/:id/follow` | Permette di seguire un altro utente (aggiungendolo alla lista dei seguiti). | Sì |
-| `POST` | `/api/v1/users/:id/unfollow` | Permette di smettere di seguire un utente precedentemente seguito. | Sì |
+| `DELETE` | `/api/v1/users/:id/follow` | Permette di smettere di seguire un utente precedentemente seguito. | Sì |
 
 ### Bacheca e Post (Posts)
 
 | Metodo | Endpoint | Descrizione | Autenticazione |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/v1/posts` | Recupera il feed generale contenente i post più recenti della community. | Sì |
+| `GET` | `/api/v1/posts/:id` | Recupera i dettagli di un singolo post. | Sì |
+| `PUT` | `/api/v1/posts/:id` | Consente di modificare la descrizione o il contenuto di un proprio post. | Sì |
 | `POST` | `/api/v1/posts` | Crea e pubblica un nuovo post sulla bacheca. | Sì |
 | `DELETE` | `/api/v1/posts/:id` | Consente l'eliminazione di un post esistente (solo se l'autore coincide con l'utente loggato). | Sì |
+| `POST` | `/api/v1/posts/:id/like` | Aggiunge/Rimuove un "Mi Piace" al post (Toggle). | Sì |
+
+### Commenti (Comments)
+
+| Metodo | Endpoint | Descrizione | Autenticazione |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/v1/posts/:id/comments` | Recupera la lista di tutti i commenti associati a un determinato post. | Sì |
+| `POST` | `/api/v1/posts/:id/comments` | Aggiunge un nuovo commento sotto un post specifico. | Sì |
+| `PUT` | `/api/v1/posts/:id/comments/:commentId` | Modifica il testo di un proprio commento. | Sì |
+| `DELETE` | `/api/v1/posts/:id/comments/:commentId` | Elimina un proprio commento. | Sì |
 
 ### Messaggistica e Chat (Chats)
 
