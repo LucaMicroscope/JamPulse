@@ -5,10 +5,11 @@ require('dotenv').config();
 // * IMPORTIAMO I MODULI NECESSARI -----------------------------------------------------------------------------------------------------------------------------------------------------------
 const express = require('express');
 const mongoose = require('mongoose');
-const AuthRoute = require('./routes/authRoute');
-const ChatRoute = require('./routes/chatRoute');
-const PostRoute = require('./routes/postRoute');
-const UserRoute = require('./routes/userRoute');
+const authRoute = require('./routes/authRoute');
+const chatRoute = require('./routes/chatRoute');
+const postRoute = require('./routes/postRoute');
+const userRoute = require('./routes/userRoute');
+const commentRoute= require('./routes/commentRoute')
 
 // * CREIAMO L'APPLICAZIONE EXPRESS -----------------------------------------------------------------------------------------------------------------------------------------------------------
 const app = express();
@@ -22,10 +23,11 @@ app.use((req, res, next) => { // !  questo serve per creare un middleware che st
   next(); 
 });
 
-app.use('/api/auth', AuthRoute); // ! questo serve per utilizzare le rotte di autenticazione
-app.use('/api/chats', ChatRoute); // ! questo serve per utilizzare le rotte dei chat
-app.use('/api/posts', PostRoute); // ! questo serve per utilizzare le rotte dei post
-app.use('/api/users', UserRoute); // ! questo serve per utilizzare le rotte degli utenti
+app.use('/api/v1/auth', AuthRoute); // ! questo serve per utilizzare le rotte di autenticazione
+app.use('/api/v1/chats', ChatRoute); // ! questo serve per utilizzare le rotte dei chat
+app.use('/api/v1/posts', PostRoute); // ! questo serve per utilizzare le rotte dei post
+app.use('/api/v1/users', UserRoute); // ! questo serve per utilizzare le rotte degli utenti
+app.use('/api/v1/posts/:id/comments',commentRoute); // ! questo serve per utilizzare le rotte dei commenti
 
 // * CONNESSIONE AL DATABASE E AVVIO DEL SERVER ----------------------------------------------------------------------------------------------------------------------------------------------
 mongoose.connect(process.env.MONGO_URI) // ! questo serve per connettersi al database MongoDB utilizzando l'URI definito nelle variabili d'ambiente
