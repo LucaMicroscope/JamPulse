@@ -3,9 +3,11 @@ const router = express.Router();
 
 const PostController = require("../controllers/postController");
 
-// router.post("/", PostController.createPost);
-// router.get("/:id", PostController.getPost);
-// router.put("/:id", PostController.updatePost);
-// router.delete("/:id", PostController.deletePost);
+router.get('/', PostController.getPosts)
+router.get('/:id', PostController.getPostById)
+router.put('/:id', PostController.updatePost)
+router.post('/', PostController.createPost)
+router.delete('/:id', PostController.deletePost)
+router.post('/:id/like', PostController.toggleLike)
 
 module.exports = router;
