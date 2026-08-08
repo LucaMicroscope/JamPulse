@@ -3,9 +3,12 @@ const router = express.Router();
 
 const UserController = require("../controllers/userController");
 
-// router.post("/", UserController.createUser);
-// router.get("/:id", UserController.getUser);
-// router.put("/:id", UserController.updateUser);
-// router.delete("/:id", UserController.deleteUser);
+router.get('/me', UserController.getLoggedUser)
+router.put('/me', UserController.updateProfile)
+router.get('/', UserController.getUsers)
+router.get('/:id', UserController.getUserById)
+router.get('/:id/posts', UserController.getPosts)
+router.post('/:id/follow', UserController.follow)
+router.delete('/:id/follow', UserController.unfollow)
 
 module.exports = router;
