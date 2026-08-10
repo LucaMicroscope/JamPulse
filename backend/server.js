@@ -11,6 +11,7 @@ const postRoute = require('./routes/postRoute');
 const userRoute = require('./routes/userRoute');
 const commentRoute = require('./routes/commentRoute')
 const messageRoute = require('./routes/messageRoute')
+const healthRoute = require('./routes/healthRoute')
 
 // * CREIAMO L'APPLICAZIONE EXPRESS -----------------------------------------------------------------------------------------------------------------------------------------------------------
 const app = express();
@@ -24,6 +25,7 @@ app.use((req, res, next) => { // !  questo serve per creare un middleware che st
     next();
 });
 
+app.use('/api/v1/health', healthRoute) // ! questo serve per utilizzare la rotta per controllare lo stato del server
 app.use('/api/v1/auth', authRoute); // ! questo serve per utilizzare le rotte di autenticazione
 app.use('/api/v1/chats', chatRoute); // ! questo serve per utilizzare le rotte dei chat
 app.use('/api/v1/posts', postRoute); // ! questo serve per utilizzare le rotte dei post
