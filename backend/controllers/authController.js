@@ -1,5 +1,7 @@
 // Importiamo il modello Mongoose 'User' per poter interagire con la collezione degli utenti nel database
 const User = require('../models/User')
+// Importiamo la libreria jsonwebtoken per poter generare un token per l'utente loggato
+const jwt = require('jsonwebtoken')
 
 // Questa funzione estrae i dati dal frontend, verifica che non ci siano duplicati 
 // (email o username) nel database, crea un nuovo documento User e lo salva.
@@ -29,7 +31,7 @@ async function register(req, res) {
             user: {
                 id: newUser._id,
                 email: newUser.email,
-                username: newUser.username,                
+                username: newUser.username,
                 instruments: newUser.instruments,
                 genres: newUser.genres
             }
@@ -41,8 +43,44 @@ async function register(req, res) {
     }
 }
 
-function login(req, res) {
-    res.json({ message: 'Rotta raggiunta con successo' })
+// Verifica le credenziali dell'utente, confronta la password criptata e, se tutto è corretto, genera un Token JWT valido per l'accesso alle rotte protette.
+async function login(req, res) {
+    try {
+        // Recuperiamo username e password dal body della richiesta
+        const { username, password } = req.body
+
+        // Cerchiamo nel database un utente con l'username inserito
+        const user = await User.findOne({ username })
+
+        // Se l'utente non viene trovato nel database mandiamo la risposta con un messaggio generico
+        if (!user) {
+            return res.status(401).json({ message: 'Username o password errati' })
+        }
+
+        // confrontiamo le password con il metodo del modello User comparePassword
+        const isMatch = await user.comparePassword(password)
+
+        // Se le password non corrispondono mandiamo la risposta con un messaggio generico
+        if (!isMatch) {
+            return res.status(401).json({ message: 'Username o password errati' })
+        }
+
+        // Se username e password sono correti generiamo un token usando come payload l'ID dell'utente
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '2h' })
+
+        // inviamo la risposta positiva che contiene il token e alcune informazioni dell'utente
+        res.json({
+            token,
+            user: {
+                id: user._id,
+                username: user.username
+            }
+        })
+
+        // Se c'è un problema tecnico rispondiamo con l'errore
+    } catch (error) {
+        res.status(500).json({ message: 'Errore nel Login', error })
+    }
 }
 
 module.exports = {
