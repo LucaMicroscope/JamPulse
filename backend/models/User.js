@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs')
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -36,5 +37,16 @@ const userSchema = new mongoose.Schema({
         ref: 'User'
     }
 }, { timestamps: true });
+
+// Middleware che si attiva prima di un "save" che, se la password è cambiata, esegue l'hashing tramite la libreria bcrypt
+userSchema.pre("save", async function () {
+    if (!this.isModified("password")) return;
+    this.password = await bcrypt.hash(this.password, 10);
+});
+
+// Metodo che confronta la password inserita con la password hashata presente nel database
+userSchema.methods.comparePassword = async function (candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+}
 
 module.exports = mongoose.model('User', userSchema);
