@@ -10,7 +10,7 @@ function verifyToken(req, res, next) {
         //estraiamo il token e lo salviamo in token
         token = authHeader.split(" ")[1]
     if (!token)
-        res.status(401).json({ message: 'Token mancante' })
+        return res.status(401).json({ message: 'Token mancante' })
     try {
         //Verifichiamo il token (che contiene l'ID utente)
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
@@ -18,7 +18,7 @@ function verifyToken(req, res, next) {
         req.user = { id: decoded.userId }
         next()
     } catch (error) {
-        res.status(401).json({ message: 'Token non valido' })
+        return res.status(401).json({ message: 'Token non valido' })
     }
 }
 
