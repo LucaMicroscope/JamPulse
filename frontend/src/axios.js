@@ -1,5 +1,5 @@
 //Configurazione globale di axios. 
-//Serve perserve per indicare l'URL base per le chiamate API e per aggiungere ad ogni richiesta il token
+//Serve per indicare l'URL base per le chiamate API e per aggiungere ad ogni richiesta il token
 import axios from 'axios'
 //prefisso globale per tutti gli URL delle richieste
 axios.defaults.baseURL = 'http://localhost:4000/api/v1'
