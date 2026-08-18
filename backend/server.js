@@ -5,6 +5,7 @@ require('dotenv').config();
 // * IMPORTIAMO I MODULI NECESSARI -----------------------------------------------------------------------------------------------------------------------------------------------------------
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors')
 const authRoute = require('./routes/authRoute');
 const chatRoute = require('./routes/chatRoute');
 const postRoute = require('./routes/postRoute');
@@ -19,6 +20,9 @@ const app = express();
 
 // * MIDDLEWARES ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 app.use(express.json()); // ! questo serve per utilizzare il middleware express.json() che permette di gestire le richieste con body in formato JSON
+app.use(cors({
+    origin: 'http://localhost:5173'
+})) // ! questo serve per utilizzare il middleware cors che permette di accettare le richieste HTTP in arrivo dal frontend
 
 // * ROUTES --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 app.use((req, res, next) => { // !  questo serve per creare un middleware che stampa il path e il metodo della richiesta in arrivo per avere un log delle richieste in arrivo
