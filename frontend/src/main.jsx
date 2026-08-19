@@ -4,10 +4,15 @@ import {BrowserRouter} from 'react-router-dom'
 
 import App from './App.jsx'
 
+import { AuthProvider } from './context/AuthContext.jsx'
+import './axios.js' // importa l'interceptor
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <AuthProvider>
+        <App />
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 )

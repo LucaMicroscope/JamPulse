@@ -79,6 +79,7 @@ async function login(req, res) {
 
         // Se c'è un problema tecnico rispondiamo con l'errore
     } catch (error) {
+        console.log('ERRORE LOGIN:', error);
         res.status(500).json({ message: 'Errore nel Login', error })
     }
 }
