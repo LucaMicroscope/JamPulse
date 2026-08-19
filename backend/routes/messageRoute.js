@@ -5,5 +5,8 @@ const router = express.Router({ mergeParams: true }); //mergeParams serve per le
 const messageController = require("../controllers/messageController");
 
 router.get('/', messageController.getMessages)
+router.post('/',messageController.createMessage)
+router.put('/:messageId',messageController.updateMessage)
+router.delete('/:messageId',messageController.deleteMessage)
 
 module.exports = router;
