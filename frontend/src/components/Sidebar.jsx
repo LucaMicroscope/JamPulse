@@ -12,6 +12,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import CreateIcon from '@mui/icons-material/Create';
 import { NavLink } from "react-router-dom";
 import { Icon, Stack, Typography } from "@mui/material";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // Definisce le voci della sidebar come un array di oggetti.
 // Ogni voce contiene l'etichetta, l'icona e il percorso associato alla navigazione.
@@ -32,6 +34,14 @@ const widthSm = 160;
 // Componente principale della barra laterale dell'applicazione.
 // Fornisce la navigazione principale e si adatta in base alla dimensione dello schermo.
 export default function Sidebar() {
+  const { logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()// Cancella user e token
+    navigate('/login')// Riporta al login
+  }
+
   return (
     // Drawer permanente posizionato a sinistra della pagina.
     // Ho usato un drawer fisso perché la navigazione deve restare disponibile durante la navigazione dell'app.
@@ -91,7 +101,7 @@ export default function Sidebar() {
 
         {/* Sezione inferiore: azione di logout. */}
         <Stack>
-          <ListItemButton>
+          <ListItemButton onClick={handleLogout}>
             <ListItemIcon><LogoutIcon /></ListItemIcon>
             <ListItemText sx={{ display: { xs: 'none', sm: 'block' } }}>Logout</ListItemText>
           </ListItemButton>
