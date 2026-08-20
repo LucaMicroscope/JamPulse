@@ -17,34 +17,95 @@ export default function Login() {
     // Stato che controlla quale tab è attiva: accesso o registrazione.
     const [tabValue, setTabValue] = useState('1');
 
+    // -------------------------------------------------------
+    // State per il form di LOGIN
+    // Ogni campo del form ha il suo "pezzo di stato".
+    // loginData è un oggetto con due proprietà: username e password.
+    // setLoginData è la funzione che lo aggiorna.
+    // -------------------------------------------------------
+    const [loginData, setLoginData] = useState({
+        username: '',
+        password: ''
+    });
+
+    // -------------------------------------------------------
+    // State per il form di REGISTRAZIONE
+    // Stessa cosa, ma con più campi.
+    // -------------------------------------------------------
+    const [registerData, setRegisterData] = useState({
+        email: '',
+        username: '',
+        password: '',
+        instruments: [],
+        genres: []
+    });
+
+    // -------------------------------------------------------
+    // State per i messaggi di errore
+    // Servirà per mostrare errori all'utente,
+    // -------------------------------------------------------
+    const [error, setError] = useState('');
+
     // Aggiorna la tab attiva quando l'utente seleziona un'altra voce.
     const tabChange = (event, newValue) => {
         setTabValue(newValue)
+        setError(''); // Puliamo gli errori quando si cambia tab
     }
-    //Variabili per il MultiSelectFilter (da sistemare perché duplicati da Search.jsx)
-    // Stato che contiene gli strumenti selezionati dall'utente.
-    const [instrument, setInstrument] = useState([]);
-    // Stato che contiene i generi selezionati dall'utente nella fase di registrazione.
-    const [genre, setGenre] = useState([]);
 
-    // Aggiorna lo stato degli strumenti ogni volta che l'utente modifica la selezione.
-    const instrumentChange = (event) => {
-        setInstrument(event.target.value);
+    // -------------------------------------------------------
+    // Handler generico per i campi di testo
+    //
+    // Invece di scrivere una funzione separata per ogni campo
+    // (setUsername, setPassword, setEmail...), usiamo UN SOLO
+    // handler che funziona per tutti i TextField.
+    //
+    // Come? Grazie all'attributo "name" del campo:
+    // quando l'utente digita in <TextField name="username">,
+    // event.target.name è "username" e event.target.value
+    // è quello che ha scritto.
+    //
+    // Lo spread operator "...prev" copia tutti i campi
+    // esistenti, e poi sovrascriviamo solo quello cambiato
+    // con la sintassi [name]: value (nome di chiave dinamico).
+    // -------------------------------------------------------
+    const handleLoginChange = (event) => {
+        const { name, value } = event.target;
+        setLoginData(prev => ({ ...prev, [name]: value }));
     };
 
-    // Aggiorna lo stato dei generi ogni volta che l'utente modifica la selezione.
-    const genreChange = (event) => {
-        setGenre(event.target.value);
+    const handleRegisterChange = (event) => {
+        const { name, value } = event.target;
+        setRegisterData(prev => ({ ...prev, [name]: value }));
     };
 
-    // Previene il comportamento predefinito del form di accesso.
+    // -------------------------------------------------------
+    // Handler per i MultiSelectFilter
+    // I MultiSelectFilter non sono TextField standard,
+    // quindi hanno bisogno di handler dedicati che aggiornano
+    // solo il campo corretto nell'oggetto registerData.
+    // -------------------------------------------------------
+
+    const handleInstrumentsChange = (event) => {
+        setRegisterData(prev => ({ ...prev, instruments: event.target.value }));
+    };
+
+    const handleGenresChange = (event) => {
+        setRegisterData(prev => ({ ...prev, genres: event.target.value }));
+    };
+
+    // -------------------------------------------------------
+    // Submit handlers (ancora vuoti)
+    // Per ora prevengono solo il comportamento default del form
+    // (che sarebbe ricaricare la pagina).
+    // -------------------------------------------------------
     const handleLogin = (event) => {
         event.preventDefault();
+        console.log('Dati login pronti da inviare:', loginData); // utile per verificare
     };
 
-    // Previene il comportamento predefinito del form di registrazione.
     const handleRegister = (event) => {
         event.preventDefault();
+        console.log('Dati registrazione pronti da inviare:', registerData); // utile per verificare
     };
 
     return (
@@ -77,13 +138,35 @@ export default function Login() {
                         </TabList>
                     </Box>
 
+                    {/* Mostriamo l'errore sopra i form, se presente */}
+                    {error && (
+                        <Alert severity="error" sx={{ mx: 3, mt: 1 }}>
+                            {error}
+                        </Alert>
+                    )}
+
                     {/* Pannello dedicato al login. */}
                     <TabPanel value='1'>
                         <form onSubmit={handleLogin}>
                             {/* Stack verticale per impilare i campi del form con spazio uniforme. */}
                             <Stack spacing={2}>
-                                <TextField fullWidth required label='Username'></TextField>
-                                <TextField fullWidth required label='Password' type="password"></TextField>
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label='Username'
+                                    name="username"
+                                    value={loginData.username}
+                                    onChange={handleLoginChange}
+                                />
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label='Password'
+                                    type="password"
+                                    name="password"
+                                    value={loginData.password}
+                                    onChange={handleLoginChange}
+                                />
                                 <Button type="submit" variant="contained">Accedi</Button>
                             </Stack>
                         </form>
@@ -94,28 +177,46 @@ export default function Login() {
                         <form onSubmit={handleRegister}>
                             {/* Stack verticale per organizzare i campi di registrazione in modo ordinato. */}
                             <Stack spacing={2}>
-                                <TextField fullWidth required label='Email'></TextField>
-                                <TextField fullWidth required label='Username'></TextField>
-                                <TextField fullWidth required label='Password' type="password"></TextField>
-
-                                {/* Selettore multiplo per scegliere gli strumenti musicali. */}
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label='Email'
+                                    type="email"
+                                    name="email"
+                                    value={registerData.email}
+                                    onChange={handleRegisterChange}
+                                />
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label='Username'
+                                    name="username"
+                                    value={registerData.username}
+                                    onChange={handleRegisterChange}
+                                />
+                                <TextField
+                                    fullWidth
+                                    required
+                                    label='Password'
+                                    type="password"
+                                    name="password"
+                                    value={registerData.password}
+                                    onChange={handleRegisterChange}
+                                />
                                 <MultiSelectFilter
                                     labelId='instrument-select-label'
-                                    value={instrument}
-                                    handleChange={instrumentChange}
+                                    value={registerData.instruments}
+                                    handleChange={handleInstrumentsChange}
                                     label='Strumenti Musicali'
                                     options={instruments}
                                 />
-
-                                {/* Selettore multiplo per scegliere i generi musicali. */}
                                 <MultiSelectFilter
                                     labelId='genre-select-label'
-                                    value={genre}
-                                    handleChange={genreChange}
+                                    value={registerData.genres}
+                                    handleChange={handleGenresChange}
                                     label='Generi Musicali'
                                     options={genres}
                                 />
-
                                 <Button type="submit" variant="contained">Registrati</Button>
                             </Stack>
                         </form>
