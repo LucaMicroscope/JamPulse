@@ -1,9 +1,11 @@
-import { Box, Stack, Typography, Tab, TextField, Button } from "@mui/material";
+import { Box, Stack, Typography, Tab, TextField, Button, Alert } from "@mui/material";
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { useState } from "react";
 import MultiSelectFilter from "../components/MultiSelectFilter";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // Elenco delle opzioni disponibili per il filtro degli strumenti musicali.
 const instruments = ["Arpa", "Basso", "Batteria", "Chitarra", "Pianoforte", "Voce"];
@@ -14,6 +16,8 @@ const genres = ["Rock", "Pop", "Jazz", "Blues", "Metal", "Funk", "Classica", "Hi
 // Qui vengono mostrati i due form principali e il passaggio tra le due modalità avviene tramite tab.
 // La pagina è divisa in due blocchi: testo introduttivo a sinistra e form di autenticazione a destra.
 export default function Login() {
+    const { login, register } = useAuth(); // Prendiamo le funzioni dal Context
+    const navigate = useNavigate(); // Inizializziamo il navigatore
     // Stato che controlla quale tab è attiva: accesso o registrazione.
     const [tabValue, setTabValue] = useState('1');
 
@@ -94,18 +98,48 @@ export default function Login() {
     };
 
     // -------------------------------------------------------
-    // Submit handlers (ancora vuoti)
-    // Per ora prevengono solo il comportamento default del form
-    // (che sarebbe ricaricare la pagina).
-    // -------------------------------------------------------
-    const handleLogin = (event) => {
-        event.preventDefault();
+    // Submit handlers 
+    //Gestisce l'invio del form di Login
+    const handleLogin = async (event) => {
+        event.preventDefault(); // Evita il ricaricamento della pagina al momento del submit
         console.log('Dati login pronti da inviare:', loginData); // utile per verificare
+        setError('') // Resetta eventuali messaggi di errore mostrati in precedenza
+        try {
+            // Richiama la funzione dal Context per autenticare l'utente e salvare il token
+            await login(loginData)
+            console.log('Login effettuato con successo')
+            // Reindirizza l'utente alla rotta principale (Home) dopo l'accesso
+            navigate('/')
+        } catch (error) {
+            // Cattura eventuali errori (es. credenziali errate) e mostra l'alert nella UI
+            // ! Cerchiamo il messaggio dal backend. Se non c'è (es. server spento), usiamo un messaggio generico
+            setError(error.response?.data?.message||'Errore durante il login')
+        }
     };
 
-    const handleRegister = (event) => {
-        event.preventDefault();
+    // Gestisce l'invio del form di Registrazione con auto-login
+    const handleRegister = async (event) => {
+        event.preventDefault();// Evita il ricaricamento della pagina al momento del submit
         console.log('Dati registrazione pronti da inviare:', registerData); // utile per verificare
+        setError('')// Resetta eventuali messaggi di errore
+        try {
+            // Effettua la chiamata al backend per creare il nuovo utente nel database
+            await register(registerData)
+            console.log('Registrazione effettuato con successo')
+            // Esegue il Login automatico subito dopo la registrazione.
+            // Estrapoliamo solo username e password dall'oggetto registerData
+            await login({
+                username: registerData.username,
+                password: registerData.password
+            })
+            console.log('Login effettuato con successo')
+            // Reindirizza il nuovo utente (ora loggato) alla Home
+            navigate('/')
+        } catch (error) {
+            // Cattura errori (es. email o username già esistenti) e mostra l'alert nella UI
+            // ! Cerchiamo il messaggio dal backend. Se non c'è (es. server spento), usiamo un messaggio generico
+            setError(error.response?.data?.message||'Errore durante la registrazione')
+        }
     };
 
     return (
