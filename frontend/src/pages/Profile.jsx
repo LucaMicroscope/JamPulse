@@ -68,7 +68,7 @@ export default function Profile() {
                 // user.followers è un array di ObjectId (che arrivano come stringhe dal JSON).
                 // .some() ritorna true se almeno un elemento soddisfa la condizione.
                 setIsFollowing(
-                    user.followers?.some(followerId => followerId.toString() === loggedUser?._id) || false
+                    user.followers?.some(followerId => followerId.toString() === loggedUser?.id) || false
                 );
 
                 // Carichiamo i post dell'utente tramite GET /users/:id/posts
