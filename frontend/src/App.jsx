@@ -33,6 +33,10 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
           <Route path="/profile" element={<Profile />} />
+          
+          {/* /profile/:id = profilo di un altro utente (stesso componente, ID diverso) */}
+          <Route path="/profile/:id" element={<Profile />} />
+          
           <Route path="/chat" element={<Chat />} />
           <Route path="/posts/:id" element={<PostDetail />} />
           <Route path="/create" element={<CreatePost />} />
