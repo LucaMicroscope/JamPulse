@@ -1,53 +1,89 @@
-import { Button, Card, CardActionArea, CardActions, CardContent, CardHeader, CardMedia, Stack, Typography } from "@mui/material";
+import { Button, Card, CardActionArea, CardActions, CardContent, CardHeader, CardMedia, Chip, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-// Dati di esempio utilizzati per visualizzare temporaneamente il profilo utente.
-// Li ho inseriti qui in modo da avere un mock rapido per la UI mentre la logica reale non è ancora implementata.
-const username = 'Nome Utente';
-const userInstruments = ['Chitarra', 'Basso'];
-const userGenres = ['Rock', 'Metal'];
 
-// Componente che rappresenta una scheda utente nella pagina di ricerca.
-// Mostra informazioni essenziali come nome, strumenti e generi musicali, oltre a due azioni rapide.
-export default function UserCard() {
-    const navigate=useNavigate()
+// Le props sono il meccanismo di React per passare dati da un componente padre a un figlio.
+// È come passare argomenti a una funzione: il padre decide cosa dare, il figlio lo usa.
+//
+// Qui destrutturiamo direttamente l'oggetto props per estrarre solo "user":
+//   <UserCard user={utenteReale} />
+//        ↑ il padre passa questo
+//                  ↑ qui lo riceviamo
+//
+// Destrutturare significa estrarre una proprietà da un oggetto direttamente nella firma:
+//   function UserCard({ user })  equivale a  function UserCard(props) { const user = props.user }
+export default function UserCard({ user }) {
+    const navigate = useNavigate();
+
     return (
         <Card sx={{ width: 370 }}>
-            {/* Area cliccabile che rappresenta il profilo dell'utente. */}
-            {/* Ho usato CardActionArea per dare all'utente un'interazione immediata e un feedback visivo. */}
-            <CardActionArea onClick={()=>navigate('/profile')}>
-                {/* Header della card con il nome utente. */}
-                <CardHeader title={username} />
+            {/* Cliccando sulla card si naviga al profilo dell'utente.
+                Prima era hardcoded '/profile', ora passiamo l'ID reale dell'utente:
+                '/profile/abc123' → React Router lo legge come :id in <Route path="/profile/:id"> */}
+            <CardActionArea onClick={() => navigate(`/profile/${user._id}`)}>
 
-                {/* Immagine profilo dell'utente. */}
+                {/* CardHeader mostra il titolo della card.
+                    Prima: title={username} → sempre "Nome Utente"
+                    Ora:   title={user.username} → nome reale preso dall'oggetto utente */}
+                <CardHeader title={user.username} />
+
+                {/* Immagine profilo generata dinamicamente in base al nome utente.
+                    ui-avatars.com è un servizio gratuito che genera avatar con le iniziali.
+                    Prima era un'immagine fissa di Unsplash, ora è personalizzata per ogni utente. */}
                 <CardMedia
-                    component="img"                    
-                    image="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80"
-                    alt="Profile Picture"                    
+                    component="img"
+                    image={`https://ui-avatars.com/api/?name=${user.username}&size=300`}
+                    alt={`Foto profilo di ${user.username}`}
                 />
 
-                {/* Contenuto principale della scheda con strumenti e generi musicali. */}
                 <CardContent>
-                    <Typography>Suona:</Typography>
-                    <Stack direction={"row"}>
-                        {userInstruments.map((instrument) => (
-                            <Typography key={instrument}>{instrument}</Typography>
-                        ))}
+                    <Typography fontWeight="bold">Suona:</Typography>
+
+                    {/* Usiamo Stack con direction="row" e flexWrap per disporre i chip in orizzontale.
+                        flexWrap: 'wrap' fa andare a capo i chip se non ci sta spazio. */}
+                    <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', mb: 1 }}>
+                        {/* user.instruments è un array di stringhe (es. ["Chitarra", "Basso"]).
+                            .map() trasforma ogni elemento dell'array in un componente React.
+                            Chip è un componente MUI che mostra un'etichetta arrotondata, 
+                            più leggibile di una semplice Typography per le liste di tag.
+                            
+                            key={instrument}: in React, quando mappi una lista, ogni elemento 
+                            deve avere una key univoca. Serve a React per capire quale elemento 
+                            aggiornare se la lista cambia, senza rifare il render di tutti. */}
+                        {user.instruments.length > 0
+                            ? user.instruments.map((instrument) => (
+                                <Chip key={instrument} label={instrument} size="small" />
+                            ))
+                            : <Typography variant="body2">Non specificati</Typography>
+                        }
                     </Stack>
 
-                    <Typography>Generi:</Typography>
-                    <Stack direction={"row"}>
-                        {userGenres.map((genre) => (
-                            <Typography key={genre}>{genre}</Typography>
-                        ))}
+                    <Typography fontWeight="bold">Generi:</Typography>
+                    <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                        {user.genres.length > 0
+                            ? user.genres.map((genre) => (
+                                <Chip key={genre} label={genre} size="small" variant="outlined" />
+                            ))
+                            : <Typography variant="body2">Non specificati</Typography>
+                        }
                     </Stack>
                 </CardContent>
             </CardActionArea>
 
-            {/* Azioni disponibili nella scheda utente. */}
             <CardActions>
-                <Button variant="contained" sx={{ width: '50%' }}>Segui</Button>
-                <Button variant="contained" sx={{ width: '50%' }}>Scrivi</Button>
+                {/* I bottoni per ora navigano solo al profilo.
+                    Nella prossima fase aggiungeremo la logica di follow/unfollow
+                    e la navigazione alla chat direttamente da qui. */}
+                <Button
+                    variant="contained"
+                    sx={{ width: '50%' }}
+                    onClick={() => navigate(`/profile/${user._id}`)}
+                >
+                    Profilo
+                </Button>
+                <Button variant="contained" sx={{ width: '50%' }}>
+                    Scrivi
+                </Button>
             </CardActions>
         </Card>
     );
