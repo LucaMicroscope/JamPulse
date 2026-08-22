@@ -35,18 +35,20 @@ async function seedDatabase() {
         const users = await User.insertMany(musiciansData);
         console.log(`👤 Creati ${users.length} utenti.`);
 
-        // 3. Ogni utente crea 5 post
+        // 3. Ogni utente crea 5 post (versione mista: prima tutti i post 1, poi i post 2, ecc.)
         const allPosts = [];
-        for (const user of users) {
-            for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 5; i++) { // Prima cicliamo sui numeri del post (da 1 a 5)
+            for (const user of users) { // Poi per ogni numero, facciamo pubblicare il post all'utente
                 const post = await Post.create({
                     userID: user._id, // ref dal postSchema
-                    content: `Questo è il post numero ${i} di ${user.username}! Sto provando nuove melodie oggi.`
+                    content: `Questo è il post numero ${i} di ${user.username}! Sto provando nuove melodie oggi.`,
+                    // Usiamo Lorem Picsum per generare un'immagine casuale basata sull'ID dell'utente e il numero del post
+                    media: `https://picsum.photos/seed/${user.username}${i}/600/400`
                 });
                 allPosts.push(post);
             }
         }
-        console.log(`📝 Creati ${allPosts.length} post (5 per ogni utente).`);
+        console.log(`📝 Creati ${allPosts.length} post mescolati (alternati per utente).`);
 
         // 4. Ogni utente commenta TUTTI i post degli ALTRI utenti
         let commentCount = 0;
