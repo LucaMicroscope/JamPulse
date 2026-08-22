@@ -1,22 +1,67 @@
+import { CircularProgress, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 import PostCard from "../components/PostCard";
-import { Grid, Stack } from "@mui/material";
+import { getPosts } from "../services/postServices"; // ! NUOVO: importiamo il service per i post
 
-// Pagina principale dell'applicazione.
-// Mostra il feed dei post in una disposizione a griglia fluida, pensata per essere semplice
-// e immediatamente leggibile. La pagina è concepita come una raccolta di card ordinate in modo responsivo.
+// Pagina principale: mostra il feed di tutti i post, dal più recente al più vecchio.
 export default function Home() {
-    return (
-        // Feed dei post: i contenuti vengono organizzati in una riga che può andare a capo. 
-        // Ho usato uno Stack con wrapping per creare una visualizzazione simile a una griglia fluida. 
-            <Stack direction='row' spacing={3} useFlexGap sx={{flexWrap:'wrap', justifyContent:'center'}} >
-                <PostCard />
-                <PostCard />
-                <PostCard />
-                <PostCard />
-                <PostCard />
-                <PostCard />
-                <PostCard />
-            </Stack>
 
-    )
+    // ! NUOVO: stato per la lista dei post arrivati dal backend
+    const [posts, setPosts] = useState([]);
+
+    // ! NUOVO: spinner mentre la chiamata è in corso
+    const [loading, setLoading] = useState(true);
+
+    // ! NUOVO: messaggio in caso di errore
+    const [error, setError] = useState(null);
+
+    // ! NUOVO: al montaggio del componente carichiamo i post dal backend.
+    // Stesso pattern usato in Search.jsx per gli utenti.
+    useEffect(() => {
+        async function loadPosts() {
+            try {
+                const data = await getPosts(); // GET /api/v1/posts
+                setPosts(data);
+            } catch (err) {
+                setError('Impossibile caricare i post. Riprova più tardi.');
+                console.error('Errore nel caricamento dei post:', err);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadPosts();
+    }, []); // [] = solo al montaggio
+
+    if (loading) {
+        return (
+            <Stack sx={{ alignItems: 'center', mt: 10 }}>
+                <CircularProgress />
+            </Stack>
+        );
+    }
+
+    if (error) {
+        return (
+            <Stack sx={{ alignItems: 'center', mt: 10 }}>
+                <Typography color="error">{error}</Typography>
+            </Stack>
+        );
+    }
+
+    return (
+        <Stack direction='row' spacing={3} useFlexGap sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+            {/* ! MODIFICATO: prima c'erano 7 <PostCard /> hardcoded.
+                Ora mappiamo i post reali arrivati dal backend.
+                Se non ce ne sono ancora, mostriamo un messaggio. */}
+            {posts.length > 0
+                ? posts.map(post => (
+                    <PostCard key={post._id} post={post} />
+                ))
+                : <Typography variant="body1" sx={{ mt: 5 }}>
+                    Nessun post ancora. Sii il primo a pubblicare!
+                </Typography>
+            }
+        </Stack>
+    );
 }
