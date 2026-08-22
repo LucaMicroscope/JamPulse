@@ -1,0 +1,120 @@
+require('dotenv').config(); // Assicurati di avere 'dotenv' installato per leggere il MONGO_URI
+const mongoose = require('mongoose');
+
+// ! ATTENZIONE: Controlla che questi percorsi corrispondano alla tua struttura delle cartelle
+const User = require('./models/User'); 
+const Post = require('./models/Post');
+const Comment = require('./models/Comment');
+const Chat = require('./models/Chat');
+const Message = require('./models/Message');
+
+// Dati fittizi per i musicisti
+const musiciansData = [
+    { username: 'freddiemercury', email: 'freddie@queen.com', password: 'password123', bio: 'Cantante, pianista, leggenda.', instruments: ['Voce', 'Pianoforte'], genres: ['Rock', 'Pop'] },
+    { username: 'jimihendrix', email: 'jimi@experience.com', password: 'password123', bio: 'Scusate se bacio il cielo.', instruments: ['Chitarra'], genres: ['Rock', 'Blues'] },
+    { username: 'milesdavis', email: 'miles@cool.com', password: 'password123', bio: 'Il re della tromba.', instruments: ['Tromba'], genres: ['Jazz'] },
+    { username: 'flea', email: 'flea@rhcp.com', password: 'password123', bio: 'Slap bass for life.', instruments: ['Basso'], genres: ['Funk', 'Rock'] },
+    { username: 'ludovico', email: 'ludo@classica.com', password: 'password123', bio: 'Compositore contemporaneo.', instruments: ['Pianoforte'], genres: ['Classica'] }
+];
+
+async function seedDatabase() {
+    try {
+        // Connessione al DB (assicurati che process.env.MONGO_URI sia valorizzato)
+        await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/jampulse');
+        console.log('🔌 Connesso al database. Inizio pulizia...');
+
+        // 1. Pulisce tutto il database esistente
+        await User.deleteMany({});
+        await Post.deleteMany({});
+        await Comment.deleteMany({});
+        await Chat.deleteMany({});
+        await Message.deleteMany({});
+        console.log('🗑️  Database pulito!');
+
+        // 2. Crea i 5 Utenti
+        const users = await User.insertMany(musiciansData);
+        console.log(`👤 Creati ${users.length} utenti.`);
+
+        // 3. Ogni utente crea 5 post
+        const allPosts = [];
+        for (const user of users) {
+            for (let i = 1; i <= 5; i++) {
+                const post = await Post.create({
+                    userID: user._id, // ref dal postSchema
+                    content: `Questo è il post numero ${i} di ${user.username}! Sto provando nuove melodie oggi.`
+                });
+                allPosts.push(post);
+            }
+        }
+        console.log(`📝 Creati ${allPosts.length} post (5 per ogni utente).`);
+
+        // 4. Ogni utente commenta TUTTI i post degli ALTRI utenti
+        let commentCount = 0;
+        for (const post of allPosts) {
+            for (const user of users) {
+                // Se l'autore del post NON è l'utente corrente, aggiungi un commento
+                if (post.userID.toString() !== user._id.toString()) {
+                    await Comment.create({
+                        postId: post._id,
+                        authorId: user._id, // ref dal commentSchema
+                        text: `Bellissimo post! Saluti da ${user.username} 🎸`
+                    });
+                    commentCount++;
+                }
+            }
+        }
+        console.log(`💬 Creati ${commentCount} commenti incrociati.`);
+
+        // 5. Crea chat 1-a-1 tra tutti gli utenti e inserisci 2 messaggi
+        let chatCount = 0;
+        let messageCount = 0;
+        
+        // Doppio ciclo per creare coppie uniche di utenti
+        for (let i = 0; i < users.length; i++) {
+            for (let j = i + 1; j < users.length; j++) {
+                const userA = users[i];
+                const userB = users[j];
+
+                // Crea la chat con i due partecipanti
+                const chat = await Chat.create({
+                    participants: [userA._id, userB._id] // ref dal chatSchema
+                });
+                chatCount++;
+
+                // Utente A manda il primo messaggio
+                await Message.create({
+                    chatID: chat._id, // ref dal messageSchema
+                    senderID: userA._id, // ref dal messageSchema
+                    content: `Ciao ${userB.username}, ti andrebbe di fare una jam session?`
+                });
+
+                // Utente B risponde
+                await Message.create({
+                    chatID: chat._id, // ref dal messageSchema
+                    senderID: userB._id, // ref dal messageSchema
+                    content: `Assolutamente sì, ${userA.username}! Quando sei libero?`
+                });
+                messageCount += 2;
+            }
+        }
+        console.log(`✉️  Create ${chatCount} chat con un totale di ${messageCount} messaggi.`);
+
+        // 6. Crea l'utente di test isolato (senza post, chat o commenti)
+        await User.create({
+            username: 'test',
+            email: 'test@test.com', // Obbligatorio per via del required nel modello User
+            password: 'test'
+        });
+        console.log('🧪 Utente di test ("test") creato con successo.');
+
+        console.log('✅ Seeding completato con successo!');
+        process.exit(0);
+
+    } catch (error) {
+        console.error('❌ Errore durante il seeding:', error);
+        process.exit(1);
+    }
+}
+
+// Lancia la funzione
+seedDatabase();
