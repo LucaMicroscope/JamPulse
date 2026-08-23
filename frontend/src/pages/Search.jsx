@@ -1,4 +1,4 @@
-import { CircularProgress, Stack, Typography } from "@mui/material";
+import { CircularProgress, Stack, Typography, Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import MultiSelectFilter from "../components/MultiSelectFilter";
 import UserCard from "../components/UserCard";
@@ -155,7 +155,16 @@ export default function Search() {
             </Stack>
 
             {/* Area risultati */}
-            <Stack direction='row' spacing={3} useFlexGap sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+            {/* Ho usato un Box con display: grid, per avere una tabella ordinata e centrata. Auto-fill rende la tabella responsiva */}
+            <Box
+                sx={{
+                    display: 'grid',
+                    // 'auto-fill' crea colonne rigide da 370px.                 
+                    gridTemplateColumns: 'repeat(auto-fill, 370px)',
+                    gap: 3, // Spaziatura di 24px (uguale a spacing={3} dello Stack)
+                    justifyContent: 'center', // Centra l'intera griglia rispetto alla pagina                
+                }}
+            >
                 {/* ! MODIFICATO: prima c'erano 7 <UserCard /> hardcoded senza dati.
                     Ora mappiamo filteredUsers (la lista filtrata) e per ogni utente
                     rendiamo una UserCard passandogli l'oggetto utente come prop.
@@ -171,7 +180,7 @@ export default function Search() {
                         Nessun utente trovato.
                     </Typography>
                 }
-            </Stack>
+            </Box>
         </Stack>
     );
 }

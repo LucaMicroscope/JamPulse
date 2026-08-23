@@ -1,4 +1,4 @@
-import { CircularProgress, Stack, Typography } from "@mui/material";
+import { CircularProgress, Stack, Box, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import PostCard from "../components/PostCard";
 import { getPosts } from "../services/postServices"; // ! NUOVO: importiamo il service per i post
@@ -50,7 +50,15 @@ export default function Home() {
     }
 
     return (
-        <Stack direction='row' spacing={3} useFlexGap sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+        <Box
+            sx={{
+                display: 'grid',
+                // 'auto-fill' crea colonne rigide da 370px.                 
+                gridTemplateColumns: 'repeat(auto-fill, 370px)',
+                gap: 3, // Spaziatura di 24px (uguale a spacing={3} dello Stack)
+                justifyContent: 'center', // Centra l'intera griglia rispetto alla pagina                
+            }}
+        >
             {/* ! MODIFICATO: prima c'erano 7 <PostCard /> hardcoded.
                 Ora mappiamo i post reali arrivati dal backend.
                 Se non ce ne sono ancora, mostriamo un messaggio. */}
@@ -62,6 +70,6 @@ export default function Home() {
                     Nessun post ancora. Sii il primo a pubblicare!
                 </Typography>
             }
-        </Stack>
+        </Box>
     );
 }

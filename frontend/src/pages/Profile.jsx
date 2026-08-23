@@ -1,7 +1,7 @@
 // frontend/src/pages/Profile.jsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Avatar, Button, CircularProgress, Stack, Typography } from "@mui/material";
+import { Avatar, Button, CircularProgress, Stack, Typography, Box } from "@mui/material";
 import PostCard from "../components/PostCard";
 import { useAuth } from "../context/AuthContext";
 import { getLoggedUser, getUserById, getPosts, follow, unfollow } from "../services/userServices";
@@ -177,8 +177,16 @@ export default function Profile() {
             )}
 
             {/* Sezione dei post dell'utente: mostra più card in modo ordinato e responsivo. */}
-            {/* Ho usato uno Stack orizzontale con wrapping perché i post devono disporsi in griglia fluida, andando a capo se lo spazio è limitato. */}
-            <Stack direction='row' spacing={3} useFlexGap sx={{ flexWrap: 'wrap', justifyContent: 'center' }}>
+            {/* Ho usato un Box con display: grid, per avere una tabella ordinata e centrata. Auto-fill rende la tabella responsiva */}
+            <Box
+                sx={{
+                    display: 'grid',
+                    // 'auto-fill' crea colonne rigide da 370px.                 
+                    gridTemplateColumns: 'repeat(auto-fill, 370px)',
+                    gap: 3, // Spaziatura di 24px (uguale a spacing={3} dello Stack)
+                    justifyContent: 'center', // Centra l'intera griglia rispetto alla pagina                
+                }}
+            >
                 {posts.length > 0
                     ? posts.map(post => (
                         // key è obbligatorio in React quando mappi una lista:
@@ -187,7 +195,7 @@ export default function Profile() {
                     ))
                     : <Typography variant="body1">Nessun post ancora.</Typography>
                 }
-            </Stack>
-        </Stack>
+            </Box>
+        </Stack >
     );
 }
