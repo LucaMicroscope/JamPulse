@@ -226,7 +226,9 @@ export default function PostDetail() {
                     {comments.length > 0
                         ? comments.map((comment) => (
                             <ListItem key={comment._id} alignItems="start" sx={{ borderBottom: 'gray solid 1px' }}>
-                                <ListItemAvatar>
+                                <ListItemAvatar
+                                    sx={{ cursor: 'pointer' }}
+                                    onClick={() => navigate(`/profile/${comment.authorId._id}`)}>
                                     {/*
                                         Avatar del commentatore generato dalle sue iniziali.
                                         comment.userID viene popolato dal backend con username.
@@ -240,7 +242,9 @@ export default function PostDetail() {
                                 <ListItemText
                                     primary={
                                         <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold ' }}>
+                                            <Typography variant="subtitle2"
+                                                onClick={() => navigate(`/profile/${comment.authorId._id}`)}
+                                                sx={{ fontWeight: 'bold ', cursor: 'pointer' }}>
                                                 {comment.authorId?.username || 'Utente'}
                                             </Typography>
                                             <Typography variant="caption">
@@ -272,10 +276,10 @@ export default function PostDetail() {
                 <Stack
                     direction='row'
                     spacing={1}
-                    sx={{ width: '100%', padding: 1, alignSelf: 'center',alignItems:'center', borderTop: 'thin solid' }}>
+                    sx={{ width: '100%', padding: 1, alignSelf: 'center', alignItems: 'center', borderTop: 'thin solid' }}>
 
                     {/* Bottone Like e Conteggio */}
-                    <Stack direction="row" sx={{alignItems:'center'}}>
+                    <Stack direction="row" sx={{ alignItems: 'center' }}>
                         <IconButton onClick={handleToggleLike} color="error" aria-label="like">
                             {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                         </IconButton>
