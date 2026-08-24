@@ -1,22 +1,40 @@
 import { Stack, Avatar, Typography, ButtonBase } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-// Componente che rappresenta un singolo contatto o conversazione nella lista chat.
-// Mostra avatar e nome utente in modo compatto e cliccabile.
-export default function UserBadge() {
+// Componente riutilizzabile che mostra l'autore di un post in modo compatto e cliccabile.
+// Usato principalmente in PostDetail per mostrare chi ha pubblicato il contenuto.
+//
+// ! MODIFICATO: prima usava dati hardcoded (username fisso, avatar fisso).
+// Ora accetta due props:
+//   - username (string): il nome dell'autore del post
+//   - userId (string): l'ID dell'autore, usato per navigare al suo profilo al click
+//
+// Se le props non arrivano (es. durante il caricamento), mostra dei valori di fallback.
+export default function UserBadge({ username, userId }) {
+    const navigate = useNavigate();
+
     // Dimensione dell'avatar all'interno del badge.
-    // Ho scelto un valore fisso per mantenere la UI uniforme tra tutti i contatti.
+    // Valore fisso per mantenere la UI uniforme.
     const avatarSize = 80;
 
     return (
-        // ButtonBase rende l'intera area cliccabile e migliora l'esperienza interattiva.
-        <ButtonBase>
-            {/* Layout orizzontale con avatar e nome utente allineati verticalmente al centro. */}
-            <Stack direction='row' spacing={3} sx={{ alignItems: 'center', justifyContent: 'center', paddingY:1 }}>
+        // ButtonBase rende l'intera area cliccabile.
+        // Al click navighiamo al profilo dell'autore, se abbiamo il suo ID.
+        <ButtonBase onClick={() => userId && navigate(`/profile/${userId}`)}>
+            {/* Layout orizzontale: avatar + nome utente allineati al centro */}
+            <Stack direction='row' spacing={3} sx={{ alignItems: 'center', justifyContent: 'center', paddingY: 1 }}>
+                {/*
+                    Avatar generato automaticamente dalle iniziali del nome utente
+                    tramite il servizio ui-avatars.com, stesso approccio usato in PostCard.jsx.
+                    Se username non è ancora disponibile, usiamo 'U' come fallback.
+                */}
                 <Avatar
-                    alt="userAvatar"
-                    src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80"
-                    sx={{ width: avatarSize, height: avatarSize }} />
-                <Typography variant="h6">Username</Typography>
+                    alt={username || 'Utente'}
+                    src={`https://ui-avatars.com/api/?name=${username || 'U'}`}
+                    sx={{ width: avatarSize, height: avatarSize }}
+                />
+                {/* ! MODIFICATO: prima era "Username" hardcoded, ora mostra il nome reale */}
+                <Typography variant="h6">{username || 'Caricamento...'}</Typography>
             </Stack>
         </ButtonBase>
     )
