@@ -199,22 +199,22 @@ export default function PostDetail() {
                 <List sx={{ width: '99%', overflowY: 'auto', flexGrow: 1 }}>
                     {comments.length > 0
                         ? comments.map((comment) => (
-                            <ListItem key={comment._id} alignItems="start">
+                            <ListItem key={comment._id} alignItems="start" sx={{borderBottom:'gray solid 1px'}}>
                                 <ListItemAvatar>
                                     {/*
                                         Avatar del commentatore generato dalle sue iniziali.
                                         comment.userID viene popolato dal backend con username.
                                     */}
                                     <Avatar
-                                        src={`https://ui-avatars.com/api/?name=${comment.userID?.username || 'U'}`}
-                                        alt={comment.userID?.username}
+                                        src={`https://ui-avatars.com/api/?name=${comment.authorId?.username || 'U'}`}
+                                        alt={comment.authorId?.username}
                                     />
                                 </ListItemAvatar>
                                 {/* ! MODIFICATO: prima erano author e text hardcoded, ora sono dati reali */}
                                 <ListItemText
-                                    primary={comment.userID?.username || 'Utente'}
+                                    primary={comment.authorId?.username || 'Utente'}
                                     secondary={comment.text}
-                                />
+                                />                               
                             </ListItem>
                         ))
                         : (
