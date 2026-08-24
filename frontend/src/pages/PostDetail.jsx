@@ -10,6 +10,8 @@ import {
 import Sidebar from "../components/Sidebar";
 import UserBadge from "../components/UserBadge";
 import SendIcon from '@mui/icons-material/Send';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite'; 
 import { getPostById } from "../services/postServices";
 import { getComments, createComment } from "../services/commentServices";
 import { useAuth } from "../context/AuthContext";
@@ -215,7 +217,7 @@ export default function PostDetail() {
                                 <ListItemText
                                     primary={
                                         <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                                            <Typography variant="subtitle2" sx={{fontWeight:'bold '}}>
+                                            <Typography variant="subtitle2" sx={{ fontWeight: 'bold ' }}>
                                                 {comment.authorId?.username || 'Utente'}
                                             </Typography>
                                             <Typography variant="caption">
@@ -246,8 +248,14 @@ export default function PostDetail() {
                 */}
                 <Stack
                     direction='row'
-                    sx={{ width: '100%', padding: 1, alignSelf: 'center', borderTop: 'thin solid' }}
-                >
+                    sx={{ width: '100%', padding: 1, alignSelf: 'center', borderTop: 'thin solid' }}>
+
+                    {/* Bottone Like */}
+                    <IconButton color="error" aria-label="like">
+                        <FavoriteBorderIcon />
+                    </IconButton>
+
+                    {/* Campo di testo */}
                     <TextField
                         fullWidth
                         size="small"
