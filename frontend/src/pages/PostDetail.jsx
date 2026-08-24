@@ -7,12 +7,11 @@ import {
     Avatar, Box, CircularProgress, Divider, List, ListItem,
     ListItemAvatar, ListItemText, Stack, Typography, TextField, IconButton
 } from "@mui/material";
-import Sidebar from "../components/Sidebar";
 import UserBadge from "../components/UserBadge";
 import SendIcon from '@mui/icons-material/Send';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite'; 
-import { getPostById } from "../services/postServices";
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { getPostById, toggleLike } from "../services/postServices";
 import { getComments, createComment } from "../services/commentServices";
 import { useAuth } from "../context/AuthContext";
 import CloseIcon from '@mui/icons-material/Close';
@@ -92,6 +91,30 @@ export default function PostDetail() {
             setCommentText('');
         } catch (err) {
             console.error('Errore nell\'invio del commento:', err);
+        }
+    }
+
+    // Capiamo se l'utente loggato ha già messo like a questo post
+    const liked = post?.likes?.includes(user?.id)
+
+    async function handleToggleLike() {
+        try {
+            // Chiamiamo l'API usando la funzione del servizio
+            const data = await toggleLike(id)
+            // Aggiorniamo lo stato locale del post per vedere subito il cuore colorato 
+            // senza dover ricaricare l'intera pagina!
+            setPost(prevPost => {
+                // Se il backend ci dice che ora c'è il like, aggiungiamo l'ID dell'utente all'array
+                if (data.liked) {
+                    return { ...prevPost, likes: [...prevPost.likes, user.id] };
+                }
+                // Altrimenti lo rimuoviamo
+                else {
+                    return { ...prevPost, likes: prevPost.likes.filter(likeId => likeId !== user.id) };
+                }
+            })
+        } catch (error) {
+            console.error('Errore durante il like', error)
         }
     }
 
@@ -248,12 +271,19 @@ export default function PostDetail() {
                 */}
                 <Stack
                     direction='row'
-                    sx={{ width: '100%', padding: 1, alignSelf: 'center', borderTop: 'thin solid' }}>
+                    spacing={1}
+                    sx={{ width: '100%', padding: 1, alignSelf: 'center',alignItems:'center', borderTop: 'thin solid' }}>
 
-                    {/* Bottone Like */}
-                    <IconButton color="error" aria-label="like">
-                        <FavoriteBorderIcon />
-                    </IconButton>
+                    {/* Bottone Like e Conteggio */}
+                    <Stack direction="row" sx={{alignItems:'center'}}>
+                        <IconButton onClick={handleToggleLike} color="error" aria-label="like">
+                            {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                        </IconButton>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold' }}>
+                            {/* Se l'array esiste mostra la lunghezza, altrimenti 0 */}
+                            {post?.likes?.length || 0}
+                        </Typography>
+                    </Stack>
 
                     {/* Campo di testo */}
                     <TextField
