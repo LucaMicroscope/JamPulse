@@ -1,10 +1,10 @@
 // frontend/src/pages/Profile.jsx
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Avatar, Button, CircularProgress, Stack, Typography, Box } from "@mui/material";
+import { Avatar, Button, CircularProgress, Stack, Typography, Box, TextField, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import PostCard from "../components/PostCard";
 import { useAuth } from "../context/AuthContext";
-import { getLoggedUser, getUserById, getPosts, follow, unfollow } from "../services/userServices";
+import { getLoggedUser, getUserById, getPosts, follow, unfollow, updateProfile } from "../services/userServices";
 
 // Dimensione dell'avatar del profilo.
 // Ho scelto di tenerla in una costante per evitare valori hard-coded sparsi nel componente
@@ -38,6 +38,19 @@ export default function Profile() {
     // Stato per mostrare uno spinner mentre i dati vengono caricati dal backend
     const [loading, setLoading] = useState(true);
 
+    // controlla se il dialogo delle impostazioni è aperto o chiuso
+    const [settingsOpen, setSettingsOpen] = useState(false);
+
+    // campi del form impostazioni, inizializzati quando il profilo viene caricato.
+    // Sono separati da profileUser così l'utente può modificarli senza alterare
+    // i dati visualizzati finché non salva.
+    const [editBio, setEditBio] = useState('');
+    const [editInstruments, setEditInstruments] = useState('');
+    const [editGenres, setEditGenres] = useState('');
+
+    // feedback visivo durante il salvataggio (disabilita il bottone Salva)
+    const [saving, setSaving] = useState(false);
+
     // Calcoliamo se il profilo che stiamo guardando è il nostro:
     // - se non c'è un :id nell'URL → è il nostro profilo
     // - se c'è un :id ma coincide con il nostro → è sempre il nostro profilo
@@ -63,6 +76,13 @@ export default function Profile() {
                 }
 
                 setProfileUser(user);
+
+                // popoliamo i campi del form con i valori attuali dell'utente.
+                // Gli array instruments e genres li convertiamo in stringa separata da virgola
+                // per renderli editabili in un TextField semplice.
+                setEditBio(user.bio || '');
+                setEditInstruments(user.instruments?.join(', ') || '');
+                setEditGenres(user.genres?.join(', ') || '');
 
                 // Controlliamo se l'utente loggato è già tra i follower del profilo visualizzato.
                 // user.followers è un array di ObjectId (che arrivano come stringhe dal JSON).
@@ -99,6 +119,29 @@ export default function Profile() {
             }
         } catch (error) {
             console.error("Errore nel follow/unfollow:", error);
+        }
+    }
+
+    // salva le modifiche al profilo chiamando PUT /users/me.
+    // Converte le stringhe di instruments e genres in array puliti:
+    // "Chitarra, Basso, " → ["Chitarra", "Basso"]
+    async function handleSaveSettings() {
+        setSaving(true);
+        try {
+            const updated = await updateProfile({
+                bio: editBio,
+                // split(',') divide la stringa per virgola, map(trim) rimuove gli spazi
+                // intorno a ogni elemento, filter(Boolean) scarta le stringhe vuote
+                instruments: editInstruments.split(',').map(s => s.trim()).filter(Boolean),
+                genres: editGenres.split(',').map(s => s.trim()).filter(Boolean),
+            });
+            // Aggiorniamo i dati visualizzati con quelli appena salvati
+            setProfileUser(updated);
+            setSettingsOpen(false);
+        } catch (error) {
+            console.error("Errore nel salvataggio delle impostazioni:", error);
+        } finally {
+            setSaving(false);
         }
     }
 
@@ -172,7 +215,63 @@ export default function Profile() {
                         {/* Mostriamo testo diverso in base allo stato isFollowing */}
                         {isFollowing ? "Smetti di seguire" : "Segui"}
                     </Button>
-                    <Button variant="contained" sx={{ width: '40%' }}>Messaggio</Button>
+                </Stack>
+            )}
+            {/* Bottone impostazioni: visibile SOLO sul proprio profilo */}
+            {isOwnProfile && (
+                <Stack direction='row' sx={{ justifyContent: 'center' }}>
+                    <Button variant="outlined" onClick={() => setSettingsOpen(true)}>
+                        Impostazioni profilo
+                    </Button>
+                    {/* ! NUOVO: Dialogo modale per le impostazioni del profilo.
+                        Appare solo quando settingsOpen è true.
+                        Permette di modificare bio, strumenti e generi musicali. */}
+                    <Dialog open={settingsOpen} onClose={() => setSettingsOpen(false)} fullWidth maxWidth="sm">
+                        <DialogTitle>Impostazioni profilo</DialogTitle>
+                        <DialogContent>
+                            <Stack spacing={3} sx={{ mt: 1 }}>
+                                {/* Campo bio: testo libero multilinea */}
+                                <TextField
+                                    label="Bio"
+                                    multiline
+                                    rows={3}
+                                    fullWidth
+                                    value={editBio}
+                                    onChange={(e) => setEditBio(e.target.value)}
+                                    placeholder="Raccontati in poche parole..."
+                                />
+                                {/* Strumenti: stringa separata da virgola, convertita in array al salvataggio.
+                                    Es: "Chitarra, Basso, Batteria" */}
+                                <TextField
+                                    label="Strumenti musicali"
+                                    fullWidth
+                                    value={editInstruments}
+                                    onChange={(e) => setEditInstruments(e.target.value)}
+                                    placeholder="Es: Chitarra, Basso, Batteria"
+                                    helperText="Separali con una virgola"
+                                />
+                                {/* Generi: stesso approccio degli strumenti */}
+                                <TextField
+                                    label="Generi musicali"
+                                    fullWidth
+                                    value={editGenres}
+                                    onChange={(e) => setEditGenres(e.target.value)}
+                                    placeholder="Es: Rock, Jazz, Blues"
+                                    helperText="Separali con una virgola"
+                                />
+                            </Stack>
+                        </DialogContent>
+                        <DialogActions>
+                            {/* Annulla: chiude il dialogo senza salvare */}
+                            <Button onClick={() => setSettingsOpen(false)} disabled={saving}>
+                                Annulla
+                            </Button>
+                            {/* Salva: chiama handleSaveSettings e si disabilita durante l'attesa */}
+                            <Button variant="contained" onClick={handleSaveSettings} disabled={saving}>
+                                {saving ? 'Salvataggio...' : 'Salva'}
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
                 </Stack>
             )}
 
