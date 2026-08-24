@@ -64,7 +64,12 @@ export default function Home() {
                 Se non ce ne sono ancora, mostriamo un messaggio. */}
             {posts.length > 0
                 ? posts.map(post => (
-                    <PostCard key={post._id} post={post} />
+                    /* ! MODIFICATO: onDelete rimuove il post eliminato dallo stato locale */
+                    <PostCard
+                        key={post._id}
+                        post={post}
+                        onDelete={(deletedId) => setPosts(prev => prev.filter(p => p._id !== deletedId))}
+                    />
                 ))
                 : <Typography variant="body1" sx={{ mt: 5 }}>
                     Nessun post ancora. Sii il primo a pubblicare!

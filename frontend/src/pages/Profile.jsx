@@ -290,7 +290,12 @@ export default function Profile() {
                     ? posts.map(post => (
                         // key è obbligatorio in React quando mappi una lista:
                         // aiuta React a identificare quale elemento aggiornare senza rifare il render di tutti
-                        <PostCard key={post._id} post={post} />
+                        // onDelete rimuove il post eliminato dallo stato locale
+                        <PostCard
+                            key={post._id}
+                            post={post}
+                            onDelete={(deletedId) => setPosts(prev => prev.filter(p => p._id !== deletedId))}
+                        />
                     ))
                     : <Typography variant="body1">Nessun post ancora.</Typography>
                 }
