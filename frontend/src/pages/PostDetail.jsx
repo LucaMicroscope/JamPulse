@@ -2,7 +2,7 @@
 // Prima tutto era hardcoded (immagine fissa, commenti finti, utente finto).
 // Ora carichiamo i dati reali dal backend usando l'ID del post che arriva dall'URL.
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
     Avatar, Box, CircularProgress, Divider, List, ListItem,
     ListItemAvatar, ListItemText, Stack, Typography, TextField, IconButton
@@ -13,6 +13,7 @@ import SendIcon from '@mui/icons-material/Send';
 import { getPostById } from "../services/postServices";
 import { getComments, createComment } from "../services/commentServices";
 import { useAuth } from "../context/AuthContext";
+import CloseIcon from '@mui/icons-material/Close';
 
 // Pagina di dettaglio di un singolo post.
 // L'ID del post viene letto dall'URL (es. /posts/abc123) tramite useParams.
@@ -26,6 +27,9 @@ export default function PostDetail() {
 
     // ! NUOVO: utente loggato, ci serve per inviare commenti e mostrare l'avatar di chi commenta
     const { user } = useAuth();
+
+    // ! NUOVO: hook per tornare alla pagina precedente quando si clicca la X
+    const navigate = useNavigate();
 
     // ! NUOVO: stato per i dati del post (immagine, descrizione, autore...)
     const [post, setPost] = useState(null);
@@ -153,6 +157,16 @@ export default function PostDetail() {
 
             {/* Colonna destra: badge autore, descrizione, lista commenti e input per nuovi commenti */}
             <Stack sx={{ alignItems: 'start', justifyContent: 'space-between', width: '50%' }}>
+                {/*
+                    Bottone X in alto a destra per chiudere il dettaglio e tornare indietro.
+                    Usiamo navigate(-1) per tornare alla pagina precedente nella cronologia,
+                    così funziona sia se si arriva dalla Home che da un profilo o dalla Search.
+                */}
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+                    <IconButton onClick={() => navigate(-1)} aria-label="Chiudi">
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
                 {/*
                     ! MODIFICATO: prima UserBadge non accettava props e mostrava dati finti.
                     Ora passiamo username e userId del vero autore del post,
