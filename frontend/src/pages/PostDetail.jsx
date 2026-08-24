@@ -14,6 +14,7 @@ import { getPostById } from "../services/postServices";
 import { getComments, createComment } from "../services/commentServices";
 import { useAuth } from "../context/AuthContext";
 import CloseIcon from '@mui/icons-material/Close';
+import { getTimeAgo } from "../utils/timeUtils";
 
 // Pagina di dettaglio di un singolo post.
 // L'ID del post viene letto dall'URL (es. /posts/abc123) tramite useParams.
@@ -199,7 +200,7 @@ export default function PostDetail() {
                 <List sx={{ width: '99%', overflowY: 'auto', flexGrow: 1 }}>
                     {comments.length > 0
                         ? comments.map((comment) => (
-                            <ListItem key={comment._id} alignItems="start" sx={{borderBottom:'gray solid 1px'}}>
+                            <ListItem key={comment._id} alignItems="start" sx={{ borderBottom: 'gray solid 1px' }}>
                                 <ListItemAvatar>
                                     {/*
                                         Avatar del commentatore generato dalle sue iniziali.
@@ -212,9 +213,18 @@ export default function PostDetail() {
                                 </ListItemAvatar>
                                 {/* ! MODIFICATO: prima erano author e text hardcoded, ora sono dati reali */}
                                 <ListItemText
-                                    primary={comment.authorId?.username || 'Utente'}
+                                    primary={
+                                        <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
+                                            <Typography variant="subtitle2" sx={{fontWeight:'bold '}}>
+                                                {comment.authorId?.username || 'Utente'}
+                                            </Typography>
+                                            <Typography variant="caption">
+                                                {getTimeAgo(comment.createdAt)}
+                                            </Typography>
+                                        </Stack>
+                                    }
                                     secondary={comment.text}
-                                />                               
+                                />
                             </ListItem>
                         ))
                         : (
