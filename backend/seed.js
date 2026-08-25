@@ -112,7 +112,7 @@ async function seedDatabase() {
         await User.create({
             username: 'test',
             email: 'test@test.com',
-            password: await bcrypt.hash('test', salt) // Criptiamo anche questa!
+            password: 'test'
         });
         console.log('🧪 Utente di test ("test") creato con successo.');
 
