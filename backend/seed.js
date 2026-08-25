@@ -7,6 +7,7 @@ const Post = require('./models/Post');
 const Comment = require('./models/Comment');
 const Chat = require('./models/Chat');
 const Message = require('./models/Message');
+const bcrypt = require('bcryptjs');
 
 // Dati fittizi per i musicisti
 const musiciansData = [
@@ -31,9 +32,15 @@ async function seedDatabase() {
         await Message.deleteMany({});
         console.log('🗑️  Database pulito!');
 
-        // 2. Crea i 5 Utenti
+        // Generiamo il "salt" (il fattore di casualità per la crittografia)
+        const salt = await bcrypt.genSalt(10);
+        
+        // Criptiamo la password di ogni musicista nell'array prima di inviarla al DB
+        for (let musician of musiciansData) {
+            musician.password = await bcrypt.hash(musician.password, salt);
+        }
+
         const users = await User.insertMany(musiciansData);
-        console.log(`👤 Creati ${users.length} utenti.`);
 
         // 3. Ogni utente crea 5 post (versione mista: prima tutti i post 1, poi i post 2, ecc.)
         const allPosts = [];
@@ -104,8 +111,8 @@ async function seedDatabase() {
         // 6. Crea l'utente di test isolato (senza post, chat o commenti)
         await User.create({
             username: 'test',
-            email: 'test@test.com', // Obbligatorio per via del required nel modello User
-            password: 'test'
+            email: 'test@test.com',
+            password: await bcrypt.hash('test', salt) // Criptiamo anche questa!
         });
         console.log('🧪 Utente di test ("test") creato con successo.');
 
