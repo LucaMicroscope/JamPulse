@@ -7,7 +7,7 @@ import { FormControl, InputLabel, MenuItem, OutlinedInput, Select } from "@mui/m
 export default function MultiSelectFilter({ labelId, value, handleChange, label, options }) {
     return (
         // FormControl contiene il campo di selezione e garantisce un layout ordinato e accessibile.
-        <FormControl sx={{ width: '100%' }}>
+        <FormControl sx={{ width: '100%', mb: 1 }}>
             {/* Etichetta visualizzata sopra il campo di selezione. */}
             <InputLabel id={labelId}>{label}</InputLabel>
 

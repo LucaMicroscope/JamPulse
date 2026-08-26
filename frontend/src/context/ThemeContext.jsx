@@ -10,7 +10,7 @@ export const useColorMode = () => useContext(ColorModeContext);
 const lightPalette = {
     mode: 'light',
     primary: {
-        main: '#1976d2', // Blu classico
+        main: '#0839cd', // Blu classico
     },
     secondary: {
         main: '#dc004e', // Rosa scuro
@@ -61,7 +61,8 @@ export default function CustomThemeProvider({ children }) {
     const theme = useMemo(
         () =>
             createTheme({
-                palette: mode === 'light' ? lightPalette : darkPalette                              
+                palette: mode === 'light' ? lightPalette : darkPalette,
+                shape:{borderRadius:5}                              
             }),
         [mode]
     );

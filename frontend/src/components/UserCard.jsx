@@ -52,9 +52,9 @@ export default function UserCard({ user }) {
                             aggiornare se la lista cambia, senza rifare il render di tutti. */}
                         {user.instruments.length > 0
                             ? user.instruments.map((instrument) => (
-                                <Chip key={instrument} label={instrument} size="small" />
+                                <Chip key={instrument} label={instrument} size="small" color="primary" />
                             ))
-                            : <Typography variant="body2">Non specificati</Typography>
+                            : <Typography variant="body2" color="textSecondary">Non specificati</Typography>
                         }
                     </Stack>
 
@@ -62,9 +62,9 @@ export default function UserCard({ user }) {
                     <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap' }}>
                         {user.genres.length > 0
                             ? user.genres.map((genre) => (
-                                <Chip key={genre} label={genre} size="small" variant="outlined" />
+                                <Chip key={genre} label={genre} size="small" variant="contained" color="secondary" />
                             ))
-                            : <Typography variant="body2">Non specificati</Typography>
+                            : <Typography variant="body2" color="textSecondary">Non specificati</Typography>
                         }
                     </Stack>
                 </CardContent>
@@ -81,11 +81,11 @@ export default function UserCard({ user }) {
                 >
                     Profilo
                 </Button>
-                    {/* Al click navighiamo alla pagina Chat passando l'oggetto utente
+                {/* Al click navighiamo alla pagina Chat passando l'oggetto utente
                     nello "state" di navigazione. React Router lo rende disponibile
                     in Chat.jsx tramite l'hook useLocation(), senza sporcare l'URL. */}
                 <Button
-                    variant="contained"
+                    variant="contained"                    
                     sx={{ width: '50%' }}
                     onClick={() => navigate('/chat', { state: { targetUser: user } })}
                 >

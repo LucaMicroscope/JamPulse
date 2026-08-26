@@ -14,6 +14,10 @@ import { NavLink } from "react-router-dom";
 import { Icon, Stack, Typography } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "@mui/material/styles";
+import Brightness4Icon from '@mui/icons-material/Brightness4'; // Luna
+import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sole
+import { useColorMode } from "../context/ThemeContext";
 
 // Definisce le voci della sidebar come un array di oggetti.
 // Ogni voce contiene l'etichetta, l'icona e il percorso associato alla navigazione.
@@ -29,13 +33,15 @@ const menuItems = [
 // Larghezze del drawer per i breakpoint "xs" e "sm".
 // Questi valori definiscono la larghezza della sidebar in base alla dimensione dello schermo.
 const widthXs = 60;
-const widthSm = 160;
+const widthSm = 170;
 
 // Componente principale della barra laterale dell'applicazione.
 // Fornisce la navigazione principale e si adatta in base alla dimensione dello schermo.
 export default function Sidebar() {
   const { logout } = useAuth()
   const navigate = useNavigate()
+  const theme = useTheme();
+  const colorMode = useColorMode()
 
   const handleLogout = () => {
     logout()// Cancella user e token
@@ -51,7 +57,7 @@ export default function Sidebar() {
       variant="permanent"
       sx={{
         width: { xs: widthXs, sm: widthSm },
-        "& .MuiDrawer-paper": { width: { xs: widthXs, sm: widthSm } },
+        "& .MuiDrawer-paper": { width: { xs: widthXs, sm: widthSm } }
       }}
     >
       {/* Contenitore principale della sidebar con layout verticale e spazio tra le sezioni. */}
@@ -61,13 +67,12 @@ export default function Sidebar() {
           <NavLink
             to='/'
             style={{
-              textDecoration: 'none',
-              color: 'inherit'
+              textDecoration: 'none'
             }}
           >
-            <ListItemButton>
-              <ListItemIcon><AppleIcon /></ListItemIcon>
-              <ListItemText sx={{ display: { xs: 'none', sm: 'block' } }}>JamPulse</ListItemText>
+            <ListItemButton sx={{ color: 'primary.main' }}>
+              <ListItemIcon sx={{ color: 'inherit' }}><AppleIcon /></ListItemIcon>
+              <ListItemText sx={{ display: { xs: 'none', sm: 'block' }, color: "inherit" }}>JamPulse</ListItemText>
             </ListItemButton>
           </NavLink>
         </Stack>
@@ -80,14 +85,14 @@ export default function Sidebar() {
               <NavLink
                 to={item.path}
                 key={item.label}
-                style={{
+                style={({ isActive }) => ({
                   textDecoration: 'none',
-                  color: 'inherit'
-                }}
+                  color: isActive ? theme.palette.primary.main : theme.palette.text.primary,
+                })}
               >
                 <ListItemButton sx={{ justifyContent: 'center' }}>
                   {/* Icona centrata all'interno del bottone. */}
-                  <ListItemIcon sx={{ justifyContent: 'center' }}>{item.icon}</ListItemIcon>
+                  <ListItemIcon sx={{ justifyContent: 'center', color: 'inherit' }}>{item.icon}</ListItemIcon>
                   {/* Mostra il testo solo su schermi medi e grandi. */}
                   <ListItemText
                     primary={item.label}
@@ -99,14 +104,23 @@ export default function Sidebar() {
           </List>
         </Stack>
 
-        {/* Sezione inferiore: azione di logout. */}
+        {/* Sezione inferiore: toggle tema e azione di logout. */}
         <Stack>
-          <ListItemButton onClick={handleLogout}>
-            <ListItemIcon><LogoutIcon /></ListItemIcon>
+          <ListItemButton onClick={colorMode.toggleColorMode}>
+            <ListItemIcon sx={{ color: 'inherit' }}>
+              {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+            </ListItemIcon>
+            <ListItemText sx={{ display: { xs: 'none', sm: 'block' } }}>
+              {/* Cambiamo testo in base al tema attuale */}
+              {theme.palette.mode === 'dark' ? 'Tema Chiaro' : 'Tema Scuro'}
+            </ListItemText>
+          </ListItemButton>
+          <ListItemButton onClick={handleLogout} sx={{ color: 'error.main' }}>
+            <ListItemIcon sx={{ color: 'inherit' }}><LogoutIcon /></ListItemIcon>
             <ListItemText sx={{ display: { xs: 'none', sm: 'block' } }}>Logout</ListItemText>
           </ListItemButton>
         </Stack>
       </Stack>
-    </Drawer>
+    </Drawer >
   );
 }

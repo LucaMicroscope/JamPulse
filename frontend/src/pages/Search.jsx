@@ -109,7 +109,7 @@ export default function Search() {
     if (loading) {
         return (
             <Stack sx={{ alignItems: 'center', mt: 10 }}>
-                <CircularProgress />
+                <CircularProgress color="primary" />
             </Stack>
         );
     }
@@ -124,7 +124,7 @@ export default function Search() {
     }
 
     return (
-        <Stack sx={{padding:2}}>
+        <Stack sx={{ padding: 2 }}>
             {/* Barra di ricerca e filtri */}
             <Stack direction={{ sm: 'column', md: 'row' }} spacing={1} sx={{ justifyContent: 'center', mb: 3 }}>
 
@@ -176,7 +176,7 @@ export default function Search() {
                     ? filteredUsers.map(user => (
                         <UserCard key={user._id} user={user} />
                     ))
-                    : <Typography variant="body1" sx={{ mt: 5 }}>
+                    : <Typography variant="body1" color="textSecondary" sx={{ mt: 5 }}>
                         Nessun utente trovato.
                     </Typography>
                 }

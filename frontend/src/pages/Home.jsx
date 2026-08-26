@@ -36,7 +36,7 @@ export default function Home() {
     if (loading) {
         return (
             <Stack sx={{ alignItems: 'center', mt: 10 }}>
-                <CircularProgress />
+                <CircularProgress color="primary"/>
             </Stack>
         );
     }
@@ -72,7 +72,7 @@ export default function Home() {
                         onDelete={(deletedId) => setPosts(prev => prev.filter(p => p._id !== deletedId))}
                     />
                 ))
-                : <Typography variant="body1" sx={{ mt: 5 }}>
+                : <Typography variant="body1" color="secondary" sx={{ mt: 5 }}>
                     Nessun post ancora. Sii il primo a pubblicare!
                 </Typography>
             }

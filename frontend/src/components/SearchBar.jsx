@@ -10,7 +10,10 @@ export default function SearchBar({ value, onChange }) {
         <TextField
             variant="outlined"
             placeholder="Cerca"
-            sx={{ width: '100%' }}
+            sx={{
+                width: '100%',
+                mb: 1
+            }}
             // ! colleghiamo value e onChange al TextField.
             // value={value} → mostra il testo che gli passa il padre
             // onChange={onChange} → ogni volta che l'utente digita, chiama la funzione del padre
@@ -20,7 +23,7 @@ export default function SearchBar({ value, onChange }) {
                 input: {
                     startAdornment: (
                         <InputAdornment position="start">
-                            <SearchIcon />
+                            <SearchIcon sx={{color:'text.secondary'}}/>
                         </InputAdornment>
                     )
                 }

@@ -46,8 +46,7 @@ export default function PostCard({ post, onDelete }) {
     return (
         <Card sx={{ width: 370 }}>
             {/* Header: cliccando si va al profilo dell'autore del post.
-                post.userID._id è l'ID dell'autore, disponibile grazie al populate nel backend. */}
-            <CardActionArea onClick={() => navigate(`/profile/${post.userID._id}`)}>
+                post.userID._id è l'ID dell'autore, disponibile grazie al populate nel backend. */}            
                 {/* Header: avatar e nome autore a sinistra, menu "..." a destra se è un nostro post */}
                 <Stack direction='row' sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
                     <CardActionArea onClick={() => navigate(`/profile/${post.userID._id}`)}>
@@ -63,7 +62,7 @@ export default function PostCard({ post, onDelete }) {
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
                                         {post.userID.username}
                                     </Typography>
-                                    <Typography variant="body2">
+                                    <Typography variant="body2" color="textSecondary">
                                         {getTimeAgo(post.createdAt)}
                                     </Typography>
                                 </Stack>
@@ -75,7 +74,7 @@ export default function PostCard({ post, onDelete }) {
                     {isOwner && (
                         <>
                             <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)} size="small" sx={{ mr: 1 }}>
-                                <MoreVertIcon />
+                                <MoreVertIcon color="textSecondary" />
                             </IconButton>
                             {/* Menu con le azioni disponibili sul proprio post */}
                             <Menu
@@ -90,7 +89,7 @@ export default function PostCard({ post, onDelete }) {
                         </>
                     )}
                 </Stack>
-            </CardActionArea>
+            
 
             {/* Corpo: cliccando si va alla pagina di dettaglio del post specifico.
                 ! MODIFICATO: prima era hardcoded '/posts/1', ora usa l'ID reale del post */}
@@ -113,7 +112,7 @@ export default function PostCard({ post, onDelete }) {
 
                     {/* Numero di like, se presenti */}
                     {post.likes?.length > 0 && (
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" color="textSecondary">
                             ❤️ {post.likes.length} {post.likes.length === 1 ? 'like' : 'like'}
                         </Typography>
                     )}
