@@ -36,3 +36,10 @@ export async function unfollow(userId) {
     const response = await axios.delete(`/users/${userId}/follow`)
     return response.data
 }
+
+// Recupera la lista degli utenti che l'utente loggato sta seguendo.
+// Chiama il nuovo endpoint GET /users/me/following del backend.
+export async function getFollowing() {
+    const response = await axios.get('/users/me/following')
+    return response.data
+}

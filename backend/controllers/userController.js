@@ -21,6 +21,28 @@ async function getLoggedUser(req, res) {
     }
 }
 
+// GET /users/me/following
+// Restituisce la lista completa degli utenti che l'utente loggato sta seguendo.
+// Ogni utente viene "popolato" per avere username e _id pronti per il frontend.
+async function getFollowing(req, res) {
+    try {
+        // Cerchiamo l'utente loggato e popoliamo l'array "following":
+        // invece di avere solo array di ID, avremo array di oggetti utente
+        // con i campi username e _id (escludiamo la password per sicurezza).
+        const user = await User.findById(req.user.id)
+            .populate('following', 'username _id')
+            .select('following')
+
+        if (!user)
+            return res.status(404).json({ message: 'Utente non trovato' })
+
+        // Restituiamo solo l'array dei following popolati
+        res.json(user.following)
+    } catch (error) {
+        res.status(500).json({ message: 'Errore nel recupero dei following', error })
+    }
+}
+
 // PUT /users/me
 // Aggiorna i campi del profilo dell'utente loggato.
 // L'utente può modificare: bio, instruments, genres.
@@ -171,5 +193,6 @@ module.exports = {
     getUserById,
     getPosts,
     follow,
-    unfollow
+    unfollow,
+    getFollowing
 }
