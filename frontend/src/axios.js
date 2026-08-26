@@ -19,4 +19,23 @@ axios.interceptors.request.use((config) => {
         return Promise.reject(error)
     })
 
+// Interceptor che interviene sulle risposte dal backend
+axios.interceptors.response.use(
+    (response) => {
+        // Se la richiesta va a buon fine, restituiamo i dati normalmente
+        return response;
+    },
+    (error) => {
+        // Se il backend risponde con 401 (Non Autorizzato / Token scaduto)
+        if (error.response && error.response.status === 401) {
+            console.error("Sessione scaduta. Reindirizzamento al login.");
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            // Forziamo il riavvio dell'app sulla pagina di login
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default axios
