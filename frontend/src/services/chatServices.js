@@ -11,3 +11,9 @@ export async function createChat(chatData) {
     const response = await axios.post('/chats', chatData)
     return response.data
 }
+
+// Elimina una chat dal backend tramite il suo ID.
+export async function deleteChat(chatId) {
+    const response = await axios.delete(`/chats/${chatId}`)
+    return response.data
+}

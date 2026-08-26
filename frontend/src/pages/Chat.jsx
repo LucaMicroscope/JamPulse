@@ -4,10 +4,11 @@ import SearchBar from "../components/SearchBar";
 import UserBadge from "../components/UserBadge";
 import SendIcon from '@mui/icons-material/Send';
 import MessageBubble from "../components/MessageBubble";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 // Importiamo gli hook e le chiamate API necessarie
 import { useAuth } from "../context/AuthContext";
-import { getChats, createChat } from "../services/chatServices";
+import { getChats, createChat, deleteChat } from "../services/chatServices";
 import { getMessages, createMessage } from "../services/messageServices";
 import { getFollowing } from "../services/userServices";
 
@@ -151,6 +152,29 @@ export default function Chat() {
         }
     };
 
+    // Elimina una chat: chiama il backend e la rimuove dallo stato locale.
+    // Se la chat eliminata era quella attiva, resettiamo anche la vista principale.
+    const handleDeleteChat = async (e, chatId) => {
+        // e.stopPropagation() impedisce che il click sul cestino si propaghi
+        // al Box padre che aprirebbe la chat invece di eliminarla.
+        e.stopPropagation();
+
+        try {
+            await deleteChat(chatId);
+
+            // Rimuoviamo la chat dalla lista locale senza ricaricare tutto dal server
+            setChats(prev => prev.filter(c => c._id !== chatId));
+
+            // Se l'utente stava guardando la chat appena eliminata, torniamo allo stato vuoto
+            if (activeChat?._id === chatId) {
+                setActiveChat(null);
+                setMessages([]);
+            }
+        } catch (error) {
+            console.error("Errore nell'eliminazione della chat:", error);
+        }
+    };
+
     // --- DIVISIONE CHAT: principali vs richieste ---
 
     // Le chat "principali" sono quelle con utenti che seguiamo.
@@ -205,21 +229,36 @@ export default function Chat() {
                     {mainChats.map((chat) => {
                         const otherUser = getOtherUser(chat);
                         return (
-                            <Box
+                            // Stack orizzontale: UserBadge a sinistra, cestino a destra
+                            <Stack
                                 key={chat._id}
+                                direction="row"
+                                alignItems="center"
                                 onClick={() => handleSelectChat(chat)}
                                 sx={{
                                     cursor: 'pointer',
-                                    // Evidenziamo la chat attiva con uno sfondo leggermente colorato
                                     backgroundColor: activeChat?._id === chat._id ? 'action.hover' : 'transparent',
-                                    borderRadius: 1
+                                    borderRadius: 1,
+                                    // pr: 1 lascia spazio al cestino senza che tocchi il bordo
+                                    pr: 1
                                 }}
                             >
-                                <UserBadge
-                                    username={otherUser?.username || "Utente Sconosciuto"}
-                                    userId={otherUser?._id}
-                                />
-                            </Box>
+                                {/* flexGrow: 1 fa espandere il badge occupando tutto lo spazio disponibile */}
+                                <Box sx={{ flexGrow: 1 }}>
+                                    <UserBadge
+                                        username={otherUser?.username || "Utente Sconosciuto"}
+                                        userId={otherUser?._id}
+                                    />
+                                </Box>
+                                {/* Bottone elimina: stopPropagation gestito dentro handleDeleteChat */}
+                                <IconButton
+                                    size="small"
+                                    onClick={(e) => handleDeleteChat(e, chat._id)}
+                                    sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}
+                                >
+                                    <DeleteIcon fontSize="small" />
+                                </IconButton>
+                            </Stack>
                         );
                     })}
 
@@ -262,22 +301,33 @@ export default function Chat() {
                             {requestChats.map((chat) => {
                                 const otherUser = getOtherUser(chat);
                                 return (
-                                    <Box
+                                    <Stack
                                         key={chat._id}
+                                        direction="row"
+                                        alignItems="center"
                                         onClick={() => handleSelectChat(chat)}
                                         sx={{
                                             cursor: 'pointer',
                                             backgroundColor: activeChat?._id === chat._id ? 'action.hover' : 'transparent',
                                             borderRadius: 1,
-                                            // Opacità ridotta per dare un senso visivo di "secondario"
-                                            opacity: 0.75
+                                            opacity: 0.75,
+                                            pr: 1
                                         }}
                                     >
-                                        <UserBadge
-                                            username={otherUser?.username || "Utente Sconosciuto"}
-                                            userId={otherUser?._id}
-                                        />
-                                    </Box>
+                                        <Box sx={{ flexGrow: 1 }}>
+                                            <UserBadge
+                                                username={otherUser?.username || "Utente Sconosciuto"}
+                                                userId={otherUser?._id}
+                                            />
+                                        </Box>
+                                        <IconButton
+                                            size="small"
+                                            onClick={(e) => handleDeleteChat(e, chat._id)}
+                                            sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}
+                                        >
+                                            <DeleteIcon fontSize="small" />
+                                        </IconButton>
+                                    </Stack>
                                 );
                             })}
                         </Stack>

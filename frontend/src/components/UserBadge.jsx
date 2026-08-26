@@ -1,41 +1,59 @@
-import { Stack, Avatar, Typography, ButtonBase } from "@mui/material";
+import { Stack, Avatar, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-// Componente riutilizzabile che mostra l'autore di un post in modo compatto e cliccabile.
-// Usato principalmente in PostDetail per mostrare chi ha pubblicato il contenuto.
+// Componente riutilizzabile che mostra avatar + nome utente di un partecipante.
 //
-// ! MODIFICATO: prima usava dati hardcoded (username fisso, avatar fisso).
-// Ora accetta due props:
-//   - username (string): il nome dell'autore del post
-//   - userId (string): l'ID dell'autore, usato per navigare al suo profilo al click
+// MODIFICATO:
+//   - rimossa la navigazione dal contenitore (non più ButtonBase)
+//   - solo l'Avatar è cliccabile e porta al profilo
+//   - justifyContent cambiato da 'center' a 'flex-start' per allineare
+//     il contenuto a sinistra all'interno del riquadro della sidebar
 //
-// Se le props non arrivano (es. durante il caricamento), mostra dei valori di fallback.
+// Props:
+//   - username (string): nome utente da mostrare
+//   - userId (string): ID usato per navigare al profilo al click sull'avatar
 export default function UserBadge({ username, userId }) {
     const navigate = useNavigate();
 
-    // Dimensione dell'avatar all'interno del badge.
-    // Valore fisso per mantenere la UI uniforme.
-    const avatarSize = 80;
+    const avatarSize = 48; // Ridotto da 80: più compatto nella sidebar della chat
 
     return (
-        // ButtonBase rende l'intera area cliccabile.
-        // Al click navighiamo al profilo dell'autore, se abbiamo il suo ID.
-        <ButtonBase onClick={() => userId && navigate(`/profile/${userId}`)}>
-            {/* Layout orizzontale: avatar + nome utente allineati al centro */}
-            <Stack direction='row' spacing={3} sx={{ alignItems: 'center', justifyContent: 'center', paddingY: 1 }}>
-                {/*
-                    Avatar generato automaticamente dalle iniziali del nome utente
-                    tramite il servizio ui-avatars.com, stesso approccio usato in PostCard.jsx.
-                    Se username non è ancora disponibile, usiamo 'U' come fallback.
-                */}
-                <Avatar
-                    alt={username || 'Utente'}
-                    src={`https://ui-avatars.com/api/?name=${username || 'U'}`}
-                    sx={{ width: avatarSize, height: avatarSize }}
-                />
-                {/* ! MODIFICATO: prima era "Username" hardcoded, ora mostra il nome reale */}
-                <Typography variant="h6">{username || 'Caricamento...'}</Typography>
-            </Stack>
-        </ButtonBase>
-    )
+        // width: '100%' fa occupare tutta la larghezza disponibile del padre,
+        // così la riga si estende fino al bordo e il cestino si posiziona correttamente.
+        // justifyContent: 'flex-start' allinea avatar e nome a sinistra.
+        <Stack
+            direction='row'
+            spacing={2}
+            sx={{
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                paddingY: 1,
+                paddingX: 1,
+                width: '100%'
+            }}
+        >
+            {/* Solo l'Avatar è cliccabile e naviga al profilo.
+                stopPropagation impedisce che il click si propaghi al Box padre
+                in Chat.jsx (che altrimenti aprirebbe la chat invece di navigare). */}
+            <Avatar
+                alt={username || 'Utente'}
+                src={`https://ui-avatars.com/api/?name=${username || 'U'}`}
+                sx={{
+                    width: avatarSize,
+                    height: avatarSize,
+                    cursor: userId ? 'pointer' : 'default',
+                    flexShrink: 0  // impedisce all'avatar di restringersi se il nome è lungo
+                }}
+                onClick={(e) => {
+                    e.stopPropagation();
+                    if (userId) navigate(`/profile/${userId}`);
+                }}
+            />
+            {/* Nome utente: testo semplice, non cliccabile.
+                noWrap taglia con "..." se il nome è troppo lungo per la sidebar. */}
+            <Typography variant="body1" noWrap>
+                {username || 'Caricamento...'}
+            </Typography>
+        </Stack>
+    );
 }

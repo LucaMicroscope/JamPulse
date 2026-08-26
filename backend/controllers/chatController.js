@@ -66,7 +66,36 @@ async function createChat(req, res) {
     }
 }
 
+// DELETE /chats/:id
+// Elimina una chat solo se l'utente loggato è uno dei partecipanti.
+// Non eliminiamo i messaggi collegati: potresti farlo con un pre-hook sul modello
+// Chat in futuro, ma per ora ci limitiamo alla chat stessa.
+async function deleteChat(req, res) {
+    try {
+        const chat = await Chat.findById(req.params.id)
+
+        if (!chat)
+            return res.status(404).json({ message: 'Chat non trovata' })
+
+        // Sicurezza: solo un partecipante può eliminare la chat.
+        // .some() verifica che almeno uno degli ID nell'array corrisponda all'utente loggato.
+        const isParticipant = chat.participants.some(
+            p => p.toString() === req.user.id
+        )
+
+        if (!isParticipant)
+            return res.status(403).json({ message: 'Non sei autorizzato ad eliminare questa chat' })
+
+        await chat.deleteOne()
+
+        res.json({ message: 'Chat eliminata correttamente' })
+    } catch (error) {
+        res.status(500).json({ message: "Errore nell'eliminazione della chat", error })
+    }
+}
+
 module.exports = {
     getChats,
-    createChat
+    createChat,
+    deleteChat
 }
