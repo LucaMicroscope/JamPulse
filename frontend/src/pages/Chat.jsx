@@ -11,6 +11,10 @@ import { getChats, createChat } from "../services/chatServices";
 import { getMessages, createMessage } from "../services/messageServices";
 import { getFollowing } from "../services/userServices";
 
+// useLocation ci permette di leggere lo "state" passato da navigate()
+// quando arriviamo in questa pagina da un'altra (es. dal tasto "Scrivi" in Search)
+import { useLocation } from 'react-router-dom';
+
 // Pagina dedicata alla sezione chat dell'applicazione.
 // La sidebar sinistra mostra due sezioni:
 //   1. Gli utenti che segui (puoi avviare o aprire una chat con loro)
@@ -21,12 +25,22 @@ export default function Chat() {
     // e per escludere noi stessi dalla lista dei partecipanti.
     const { user } = useAuth();
 
+    // location.state può contenere un oggetto { targetUser } se arriviamo
+    // dalla pagina Cerca tramite il tasto "Scrivi". Se arriviamo navigando
+    // normalmente, location.state è null.
+    const location = useLocation();
+
     // --- STATI PRINCIPALI ---
     const [chats, setChats] = useState([]);         // Tutte le chat di cui siamo partecipanti (dal backend)
     const [following, setFollowing] = useState([]); // Gli utenti che seguiamo
     const [activeChat, setActiveChat] = useState(null);   // La conversazione attualmente aperta
     const [messages, setMessages] = useState([]);         // Messaggi della conversazione aperta
     const [newMessageText, setNewMessageText] = useState(''); // Testo in digitazione nell'input
+
+    // Testo digitato nella barra di ricerca della sidebar.
+    // Viene usato per filtrare sia i following che le chat già esistenti.
+    const [searchText, setSearchText] = useState('');
+    
 
     // Carichiamo sia le chat esistenti sia la lista dei following
     // all'apertura della pagina (array vuoto = esegui solo al primo render).
@@ -47,6 +61,29 @@ export default function Chat() {
         }
         loadData();
     }, []);
+
+    // Quando i dati iniziali (chats + following) sono pronti E siamo arrivati
+    // qui tramite il tasto "Scrivi", apriamo subito la chat con quell'utente.
+    // Le dipendenze [chats, following] garantiscono che questo venga eseguito
+    // solo DOPO che i dati sono stati caricati, non prima.
+    useEffect(() => {
+        const targetUser = location.state?.targetUser;
+
+        // Se non c'è un utente target nello state (navigazione normale), non facciamo nulla
+        if (!targetUser) return;
+
+        // Se i dati non sono ancora pronti, aspettiamo il prossimo render
+        if (chats.length === 0 && following.length === 0) return;
+
+        // Avviamo o apriamo la chat con l'utente target automaticamente
+        handleSelectFollowing(targetUser);
+
+        // Puliamo lo state di navigazione per evitare che al refresh
+        // si riapra di nuovo la stessa chat automaticamente.
+        // replace: true sovrascrive la voce nella cronologia del browser.
+        window.history.replaceState({}, '');
+
+    }, [chats, following]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // --- FUNZIONI HELPER ---
 
@@ -116,27 +153,31 @@ export default function Chat() {
 
     // --- DIVISIONE CHAT: principali vs richieste ---
 
-    // Le chat "principali" sono quelle dove l'altra persona è qualcuno che seguiamo.
-    // Le mostriamo in cima perché sono contatti fidati.
+    // Le chat "principali" sono quelle con utenti che seguiamo.
+    // Filtriamo anche per il testo digitato nella barra di ricerca (case-insensitive).
     const mainChats = chats.filter(chat => {
         const other = getOtherUser(chat);
-        return other && isFollowing(other._id);
+        if (!other || !isFollowing(other._id)) return false;
+        // Se searchText è vuoto, tutti passano; altrimenti filtriamo per username
+        return other.username.toLowerCase().includes(searchText.toLowerCase());
     });
 
-    // Le chat "richieste" sono quelle dove chi ha scritto NON è tra i nostri following.
-    // Possono arrivare quando un utente non-seguito ci invia un messaggio per primo.
+    // Le chat "richieste" sono quelle da utenti che non seguiamo.
+    // Anche qui applichiamo il filtro per testo.
     const requestChats = chats.filter(chat => {
         const other = getOtherUser(chat);
-        return other && !isFollowing(other._id);
+        if (!other || isFollowing(other._id)) return false;
+        return other.username.toLowerCase().includes(searchText.toLowerCase());
     });
 
-    // Costruiamo la lista degli utenti che seguiamo ma con cui NON abbiamo ancora
-    // una chat aperta. Li mostriamo comunque per permettere di iniziare una conversazione.
+    // Following senza chat ancora aperta, filtrati per testo di ricerca.
     const followingWithoutChat = following.filter(f => {
-        return !chats.some(chat => {
+        const hasChat = chats.some(chat => {
             const other = getOtherUser(chat);
             return other && other._id === f._id;
         });
+        if (hasChat) return false;
+        return f.username.toLowerCase().includes(searchText.toLowerCase());
     });
 
     // --- RENDERING ---
@@ -146,8 +187,13 @@ export default function Chat() {
             {/* SIDEBAR SINISTRA: Lista contatti e conversazioni (320px fissa) */}
             <Stack spacing={2} sx={{ padding: 1, borderRight: 'thin groove', width: 320, flexShrink: 0, overflowY: 'auto' }}>
 
-                {/* Barra di ricerca per trovare rapidamente un contatto */}
-                <SearchBar />
+                {/* Barra di ricerca collegata allo stato searchText.
+                    value e onChange la rendono un "controlled component":
+                    il valore mostrato è sempre sincronizzato con lo stato React. */}
+                <SearchBar
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                />
 
                 {/* ------- SEZIONE 1: FOLLOWING (chat esistenti + contatti senza chat) ------- */}
                 <Typography variant="caption" color="text.secondary" sx={{ px: 1, fontWeight: 'bold', textTransform: 'uppercase' }}>

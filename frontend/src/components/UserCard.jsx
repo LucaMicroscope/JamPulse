@@ -81,7 +81,14 @@ export default function UserCard({ user }) {
                 >
                     Profilo
                 </Button>
-                <Button variant="contained" sx={{ width: '50%' }}>
+                    {/* Al click navighiamo alla pagina Chat passando l'oggetto utente
+                    nello "state" di navigazione. React Router lo rende disponibile
+                    in Chat.jsx tramite l'hook useLocation(), senza sporcare l'URL. */}
+                <Button
+                    variant="contained"
+                    sx={{ width: '50%' }}
+                    onClick={() => navigate('/chat', { state: { targetUser: user } })}
+                >
                     Scrivi
                 </Button>
             </CardActions>
