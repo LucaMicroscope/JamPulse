@@ -56,7 +56,8 @@ export default function Home() {
                 // 'auto-fill' crea colonne rigide da 370px.                 
                 gridTemplateColumns: 'repeat(auto-fill, 370px)',
                 gap: 3, // Spaziatura di 24px (uguale a spacing={3} dello Stack)
-                justifyContent: 'center', // Centra l'intera griglia rispetto alla pagina                
+                justifyContent: 'center', // Centra l'intera griglia rispetto alla pagina,
+                padding:2                
             }}
         >
             {/* ! MODIFICATO: prima c'erano 7 <PostCard /> hardcoded.

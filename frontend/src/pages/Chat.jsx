@@ -41,7 +41,7 @@ export default function Chat() {
     // Testo digitato nella barra di ricerca della sidebar.
     // Viene usato per filtrare sia i following che le chat già esistenti.
     const [searchText, setSearchText] = useState('');
-    
+
 
     // Carichiamo sia le chat esistenti sia la lista dei following
     // all'apertura della pagina (array vuoto = esegui solo al primo render).
@@ -336,7 +336,7 @@ export default function Chat() {
             </Stack>
 
             {/* AREA PRINCIPALE DESTRA: Messaggi della conversazione attiva */}
-            <Stack sx={{ flexGrow: 1, height: '100%' }}>
+            <Stack sx={{ flexGrow: 1, height: '100%', padding: 2 }}>
                 {activeChat ? (
                     <>
                         {/* HEADER: Nome dell'utente con cui stiamo chattando */}

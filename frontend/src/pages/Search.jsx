@@ -124,7 +124,7 @@ export default function Search() {
     }
 
     return (
-        <Stack>
+        <Stack sx={{padding:2}}>
             {/* Barra di ricerca e filtri */}
             <Stack direction={{ sm: 'column', md: 'row' }} spacing={1} sx={{ justifyContent: 'center', mb: 3 }}>
 

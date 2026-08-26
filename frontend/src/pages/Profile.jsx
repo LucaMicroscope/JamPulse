@@ -163,7 +163,7 @@ export default function Profile() {
 
         // Stack verticale principale del profilo: contiene tutte le sezioni della pagina in ordine logico.
         // Ho usato uno Stack in colonna perché gli elementi del profilo devono essere mostrati uno sotto l'altro: intro, azioni, post.
-        <Stack spacing={3}>
+        <Stack spacing={3} sx={{ padding: 2 }}>
             {/* Sezione superiore del profilo: unisce avatar e informazioni dell'utente. */}
             {/* Ho raggruppato questi elementi in uno Stack orizzontale perché l'immagine del profilo e i dati testuali devono apparire affiancati. */}
             <Stack direction='row' spacing={10} sx={{ justifyContent: 'center', alignItems: 'center' }}>
