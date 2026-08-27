@@ -1,28 +1,84 @@
-
 // * IMPORTIAMO LE VARIABILI D'AMBIENTE ----------------------------------------------------------------------------------------------------------------------------------------------------
 require('dotenv').config();
 
 // * IMPORTIAMO I MODULI NECESSARI -----------------------------------------------------------------------------------------------------------------------------------------------------------
 const express = require('express');
 const mongoose = require('mongoose');
-const cors = require('cors')
+const cors = require('cors');
+
+// ! NOVITÀ REAL-TIME: importiamo 'http' (modulo nativo di Node) e Server di socket.io.
+// ! Socket.IO ha bisogno di un server HTTP "grezzo" a cui agganciarsi, non può usare
+// ! direttamente l'app Express. Quindi creiamo prima il server HTTP e poi lo passiamo a socket.io.
+const http = require('http');
+const { Server } = require('socket.io');
+
 const authRoute = require('./routes/authRoute');
 const chatRoute = require('./routes/chatRoute');
 const postRoute = require('./routes/postRoute');
 const userRoute = require('./routes/userRoute');
-const commentRoute = require('./routes/commentRoute')
-const messageRoute = require('./routes/messageRoute')
+const commentRoute = require('./routes/commentRoute');
+const messageRoute = require('./routes/messageRoute');
 const healthRoute = require('./routes/healthRoute');
 const verifyToken = require('./middlewares/authMiddleware');
 
 // * CREIAMO L'APPLICAZIONE EXPRESS -----------------------------------------------------------------------------------------------------------------------------------------------------------
 const app = express();
 
+// ! NOVITÀ REAL-TIME: creiamo il server HTTP agganciando l'app Express.
+// ! Questo server verrà condiviso sia da Express (per le REST API) che da Socket.IO (per i WebSocket).
+const httpServer = http.createServer(app);
+
+// ! NOVITÀ REAL-TIME: creiamo l'istanza di Socket.IO passandole il server HTTP.
+// ! La configurazione cors è identica a quella di Express: accettiamo solo richieste
+// ! dal nostro frontend in locale.
+const io = new Server(httpServer, {
+    cors: {
+        origin: 'http://localhost:5173'
+    }
+});
+
 // * MIDDLEWARES ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 app.use(express.json()); // ! questo serve per utilizzare il middleware express.json() che permette di gestire le richieste con body in formato JSON
 app.use(cors({
     origin: 'http://localhost:5173'
-})) // ! questo serve per utilizzare il middleware cors che permette di accettare le richieste HTTP in arrivo dal frontend
+})); // ! questo serve per utilizzare il middleware cors che permette di accettare le richieste HTTP in arrivo dal frontend
+
+// * SOCKET.IO: GESTIONE CONNESSIONI REAL-TIME ----------------------------------------------------------------------------------------------------------------------------------------------
+// ! io.on('connection', ...) viene chiamato ogni volta che UN client (browser) si connette.
+// ! La variabile 'socket' rappresenta quel singolo client connesso.
+io.on('connection', (socket) => {
+    console.log(`[Socket.IO] Nuovo client connesso: ${socket.id}`);
+
+    // ! EVENTO 'join_chat': il frontend lo emette quando l'utente apre una conversazione.
+    // ! socket.join(chatId) aggiunge questo client a una "stanza" (room) con nome = ID della chat.
+    // ! Le stanze sono gruppi logici: possiamo poi inviare messaggi SOLO ai client in quella stanza.
+    socket.on('join_chat', (chatId) => {
+        socket.join(chatId);
+        console.log(`[Socket.IO] Client ${socket.id} è entrato nella stanza: ${chatId}`);
+    });
+
+    // ! EVENTO 'leave_chat': il frontend lo emette quando l'utente cambia conversazione.
+    // ! socket.leave(chatId) rimuove il client dalla stanza, così non riceve più i messaggi di quella chat.
+    socket.on('leave_chat', (chatId) => {
+        socket.leave(chatId);
+        console.log(`[Socket.IO] Client ${socket.id} ha lasciato la stanza: ${chatId}`);
+    });
+
+    // ! EVENTO 'send_message': il frontend lo emette quando l'utente invia un messaggio.
+    // ! Riceviamo i dati del messaggio già salvato nel DB (con _id, senderID popolato, ecc.)
+    // ! e li "broadcastiamo" a tutti gli altri client nella stessa stanza.
+    socket.on('send_message', ({ chatId, message }) => {
+        // ! socket.to(chatId).emit(...) invia l'evento SOLO agli altri client nella stanza 'chatId',
+        // ! escluso chi ha emesso 'send_message' (che ha già aggiornato la sua UI localmente).
+        socket.to(chatId).emit('receive_message', message);
+        console.log(`[Socket.IO] Messaggio inoltrato nella stanza: ${chatId}`);
+    });
+
+    // ! EVENTO 'disconnect': viene chiamato automaticamente quando il client chiude il browser/tab.
+    socket.on('disconnect', () => {
+        console.log(`[Socket.IO] Client disconnesso: ${socket.id}`);
+    });
+});
 
 // * ROUTES --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 app.use((req, res, next) => { // !  questo serve per creare un middleware che stampa il path e il metodo della richiesta in arrivo per avere un log delle richieste in arrivo
@@ -30,9 +86,9 @@ app.use((req, res, next) => { // !  questo serve per creare un middleware che st
     next();
 });
 
-app.use('/api/v1/health', healthRoute) // ! questo serve per utilizzare la rotta per controllare lo stato del server
+app.use('/api/v1/health', healthRoute); // ! questo serve per utilizzare la rotta per controllare lo stato del server
 app.use('/api/v1/auth', authRoute); // ! questo serve per utilizzare le rotte di autenticazione
-app.use(verifyToken)
+app.use(verifyToken);
 app.use('/api/v1/chats', chatRoute); // ! questo serve per utilizzare le rotte dei chat
 app.use('/api/v1/posts', postRoute); // ! questo serve per utilizzare le rotte dei post
 app.use('/api/v1/users', userRoute); // ! questo serve per utilizzare le rotte degli utenti
@@ -42,11 +98,12 @@ app.use('/api/v1/chats/:id/messages', messageRoute); // ! questo serve per utili
 // * CONNESSIONE AL DATABASE E AVVIO DEL SERVER ----------------------------------------------------------------------------------------------------------------------------------------------
 mongoose.connect(process.env.MONGO_URI) // ! questo serve per connettersi al database MongoDB utilizzando l'URI definito nelle variabili d'ambiente
     .then(() => {
-        // ! QUESTA PARTE DI CODICE NON È NECESSARIA, MA È UTILE PER TESTARE LA CONNESSIONE AL DATABASE
-        app.listen(process.env.PORT, () => { // ! questo serve per far partire il server sulla porta definita nelle variabili d'ambiente
+        // ! NOVITÀ: ora facciamo ascoltare httpServer invece di app.
+        // ! È lo stesso risultato finale, ma httpServer include anche il supporto WebSocket di Socket.IO.
+        httpServer.listen(process.env.PORT, () => {
             console.log(`Server is running on port ${process.env.PORT} !!  CONFERMATO CHE LA CONNESSIONE AL DATABASE È STATA EFFETTUATA CON SUCCESSO !!`);
-        })
+        });
     })
     .catch((error) => { // ! questa parte di codice serve per gestire eventuali errori nella connessione al database
         console.log(error);
-    })
+    });

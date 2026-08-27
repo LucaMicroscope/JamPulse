@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
-import { Box, Divider, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { useState, useEffect, useCallback } from "react";
+
+// ! REAL-TIME: importiamo il nostro hook custom per la gestione del socket
+import { useSocket } from "../hooks/useSocket";import { Box, Divider, IconButton, Stack, TextField, Typography } from "@mui/material";
+
 import SearchBar from "../components/SearchBar";
 import UserBadge from "../components/UserBadge";
 import SendIcon from '@mui/icons-material/Send';
@@ -42,6 +45,20 @@ export default function Chat() {
     // Viene usato per filtrare sia i following che le chat già esistenti.
     const [searchText, setSearchText] = useState('');
     
+    // REAL-TIME: callback chiamata dal socket quando arriva un messaggio dall'altro utente.
+    //  useCallback è fondamentale qui: senza di esso, ad ogni re-render di Chat verrebbe creata
+    //  una NUOVA funzione, causando un loop infinito nell'useEffect di useSocket
+    //  (ogni render -> nuova funzione -> useEffect si riesegue -> nuovo render -> ...).
+    // useCallback garantisce che la funzione venga ricreata SOLO se setMessages cambia (mai).
+    const handleReceiveMessage = useCallback((message) => {
+        setMessages(prev => [...prev, message]);
+    }, [setMessages]);
+
+    // REAL-TIME: attiviamo il nostro hook socket.
+    // - activeChatId: quando cambia, il socket cambia automaticamente stanza
+    // - handleReceiveMessage: viene chiamata ogni volta che arriva un messaggio real-time
+    // - emitSendMessage: la usiamo in handleSendMessage per notificare l'altro utente
+    const { emitSendMessage } = useSocket(activeChat?._id ?? null, handleReceiveMessage);
 
     // Carichiamo sia le chat esistenti sia la lista dei following
     // all'apertura della pagina (array vuoto = esegui solo al primo render).
@@ -134,16 +151,24 @@ export default function Chat() {
     };
 
     // Invia un nuovo messaggio nella chat attiva.
+        // Invia un nuovo messaggio nella chat attiva.
     const handleSendMessage = async () => {
         // Blocchiamo l'invio se il testo è vuoto o se non c'è una chat aperta
         if (!newMessageText.trim() || !activeChat) return;
 
         try {
+            // 1. Salviamo il messaggio nel database tramite REST API (come prima)
             const newMsg = await createMessage(activeChat._id, { content: newMessageText });
 
-            // Aggiorniamo la lista messaggi localmente per un'esperienza immediata,
-            // senza dover ricaricare tutta la chat dal server.
+            // 2. Aggiorniamo la nostra UI localmente per un'esperienza immediata,
+            //    senza aspettare che il socket ci rimandi indietro il messaggio.
             setMessages(prev => [...prev, newMsg]);
+
+            // REAL-TIME: 3. Notifichiamo il server via socket, che a sua volta
+            // inoltrerà il messaggio a TUTTI gli altri client nella stessa stanza (chat).
+            // Passiamo il messaggio già popolato (con senderID.username) restituito dal backend,
+            // così l'altro utente può mostrarlo direttamente senza altre chiamate API.
+            emitSendMessage(activeChat._id, newMsg);
 
             // Puliamo il campo di testo dopo l'invio
             setNewMessageText('');
