@@ -1,5 +1,4 @@
-import { Alert, Button, Card, CircularProgress, Stack, TextField, Typography } from "@mui/material";
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { Alert, Button, Card, CircularProgress, Stack, TextField, Typography, } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPost } from "../services/postServices";
@@ -55,14 +54,14 @@ export default function CreatePost() {
     }
 
     return (
-        <Stack sx={{ border: 'solid', height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+        <Stack sx={{ height: '100%', justifyContent: 'center', alignItems: 'center' }}>
             <Card sx={{ width: '80%', borderRadius: 5, padding: 5 }}>
                 {/* ! MODIFICATO: da <form> a onSubmit su Stack.
                     I form HTML con <form> in React + MUI possono causare comportamenti anomali,
                     specialmente con i Dialog. È più idiomatico gestire l'invio
                     con onSubmit direttamente sullo Stack che funge da contenitore. */}
                 <Stack spacing={5} component="form" onSubmit={handleSubmit}>
-                    <Typography variant="h5" align="center">
+                    <Typography variant="h5" align="center" color="primary" sx={{ fontWeight: 'bold' }}>
                         Crea un nuovo post
                     </Typography>
 

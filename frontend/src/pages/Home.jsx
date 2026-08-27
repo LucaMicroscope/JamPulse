@@ -36,7 +36,7 @@ export default function Home() {
     if (loading) {
         return (
             <Stack sx={{ alignItems: 'center', mt: 10 }}>
-                <CircularProgress />
+                <CircularProgress color="primary"/>
             </Stack>
         );
     }
@@ -56,7 +56,8 @@ export default function Home() {
                 // 'auto-fill' crea colonne rigide da 370px.                 
                 gridTemplateColumns: 'repeat(auto-fill, 370px)',
                 gap: 3, // Spaziatura di 24px (uguale a spacing={3} dello Stack)
-                justifyContent: 'center', // Centra l'intera griglia rispetto alla pagina                
+                justifyContent: 'center', // Centra l'intera griglia rispetto alla pagina,
+                padding:2                
             }}
         >
             {/* ! MODIFICATO: prima c'erano 7 <PostCard /> hardcoded.
@@ -71,7 +72,7 @@ export default function Home() {
                         onDelete={(deletedId) => setPosts(prev => prev.filter(p => p._id !== deletedId))}
                     />
                 ))
-                : <Typography variant="body1" sx={{ mt: 5 }}>
+                : <Typography variant="body1" color="secondary" sx={{ mt: 5 }}>
                     Nessun post ancora. Sii il primo a pubblicare!
                 </Typography>
             }

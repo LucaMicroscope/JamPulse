@@ -137,82 +137,83 @@ export default function PostDetail() {
     }
 
     return (
-        // Area principale del dettaglio post: immagine + colonna delle informazioni.
-        <Stack
-            direction='row'
-            spacing={2}
-            sx={{
-                flexGrow: 1,
-                backgroundColor: 'lightgray',
-                borderRadius: 8,
-                maxHeight: '90vh',
-                overflow: 'hidden'
-            }}
-        >
-            {/*
+        <Stack sx={{ height: '100vh', justifyContent: 'center', padding: 2 }}>
+            {/* Area principale del dettaglio post: immagine + colonna delle informazioni.*/}
+            <Stack
+                direction='row'
+                spacing={2}
+                sx={{
+                    flexGrow: 1,
+                    backgroundColor: 'lightgray',
+                    borderRadius: 8,
+                    maxHeight: '90vh',
+                    overflow: 'hidden'
+                }}
+            >
+                {/*
                 Immagine del post: occupa circa metà della larghezza disponibile.
                 ! MODIFICATO: prima era un'immagine fissa di Unsplash hardcoded.
                 Ora mostriamo post.media (URL reale salvato nel DB).
                 Se il post non ha immagine (post.media è stringa vuota), mostriamo
                 un placeholder grigio per mantenere il layout bicolonna.
             */}
-            {post.media ? (
-                <Box
-                    component='img'
-                    src={post.media}
-                    alt="Immagine del post"
-                    sx={{
-                        width: '50%',
-                        objectFit: 'cover'
-                    }}
-                />
-            ) : (
-                // Placeholder quando il post non ha immagine
-                <Box
-                    sx={{
-                        width: '50%',
-                        backgroundColor: '#ccc',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                    }}
-                >
-                    <Typography color="text.secondary">Nessuna immagine</Typography>
-                </Box>
-            )}
+                {post.media ? (
+                    <Box
+                        component='img'
+                        src={post.media}
+                        alt="Immagine del post"
+                        sx={{
+                            width: '50%',
+                            objectFit: 'cover'
+                        }}
+                    />
+                ) : (
+                    // Placeholder quando il post non ha immagine
+                    <Box
+                        sx={{
+                            width: '50%',
+                            backgroundColor: '#ccc',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                    >
+                        <Typography color="text.secondary">Nessuna immagine</Typography>
+                    </Box>
+                )}
 
-            {/* Colonna destra: badge autore, descrizione, lista commenti e input per nuovi commenti */}
-            <Stack sx={{ alignItems: 'start', justifyContent: 'space-between', width: '50%' }}>
-                {/*
+                {/* Colonna destra: badge autore, descrizione, lista commenti e input per nuovi commenti */}
+                <Stack sx={{ alignItems: 'start', justifyContent: 'space-between', width: '50%' }}>
+                    {/*
                     Bottone X in alto a destra per chiudere il dettaglio e tornare indietro.
                     Usiamo navigate(-1) per tornare alla pagina precedente nella cronologia,
                     così funziona sia se si arriva dalla Home che da un profilo o dalla Search.
                 */}
-                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-                    <IconButton onClick={() => navigate(-1)} aria-label="Chiudi">
-                        <CloseIcon />
-                    </IconButton>
-                </Box>
-                {/*
+                    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+                        <IconButton onClick={() => navigate(-1)} aria-label="Chiudi">
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+                    {/*
                     ! MODIFICATO: prima UserBadge non accettava props e mostrava dati finti.
                     Ora passiamo username e userId del vero autore del post,
                     così il badge è cliccabile e porta al profilo corretto.
                     post.userID viene popolato dal backend con .populate('userID', 'username').
                 */}
-                <UserBadge
-                    username={post.userID?.username}
-                    userId={post.userID?._id}
-                />
+                    <UserBadge
+                        username={post.userID?.username}
+                        userId={post.userID?._id}
+                    />
 
-                {/*
+                    {/*
                     Descrizione del post: testo libero inserito dall'autore.
                     ! MODIFICATO: prima era testo hardcoded, ora è post.content reale.
                 */}
-                <Typography variant="body1" sx={{ padding: 1 }}>
-                    {post.content}
-                </Typography>
+                    <Typography variant="body1" sx={{ padding: 1 }}>
+                        {post.content}
+                    </Typography>
 
-                {/*
+                    {/*
                     Lista dei commenti:
                     - Uso List per avere una struttura semantica e accessibile
                     - overflowY: 'auto' mantiene la lista scrollabile senza espandere l'altezza
@@ -222,49 +223,49 @@ export default function PostDetail() {
                     Ora mappiamo i commenti reali arrivati dal backend.
                     Se non ci sono commenti, mostriamo un messaggio invitante.
                 */}
-                <List sx={{ width: '99%', overflowY: 'auto', flexGrow: 1 }}>
-                    {comments.length > 0
-                        ? comments.map((comment) => (
-                            <ListItem key={comment._id} alignItems="start" sx={{ borderBottom: 'gray solid 1px' }}>
-                                <ListItemAvatar
-                                    sx={{ cursor: 'pointer' }}
-                                    onClick={() => navigate(`/profile/${comment.authorId._id}`)}>
-                                    {/*
+                    <List sx={{ width: '99%', overflowY: 'auto', flexGrow: 1 }}>
+                        {comments.length > 0
+                            ? comments.map((comment) => (
+                                <ListItem key={comment._id} alignItems="start" sx={{ borderBottom: 'gray solid 1px' }}>
+                                    <ListItemAvatar
+                                        sx={{ cursor: 'pointer' }}
+                                        onClick={() => navigate(`/profile/${comment.authorId._id}`)}>
+                                        {/*
                                         Avatar del commentatore generato dalle sue iniziali.
                                         comment.userID viene popolato dal backend con username.
                                     */}
-                                    <Avatar
-                                        src={`https://ui-avatars.com/api/?name=${comment.authorId?.username || 'U'}`}
-                                        alt={comment.authorId?.username}
+                                        <Avatar
+                                            src={`https://ui-avatars.com/api/?name=${comment.authorId?.username || 'U'}`}
+                                            alt={comment.authorId?.username}
+                                        />
+                                    </ListItemAvatar>
+                                    {/* ! MODIFICATO: prima erano author e text hardcoded, ora sono dati reali */}
+                                    <ListItemText
+                                        primary={
+                                            <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
+                                                <Typography variant="subtitle2"
+                                                    onClick={() => navigate(`/profile/${comment.authorId._id}`)}
+                                                    sx={{ fontWeight: 'bold ', cursor: 'pointer' }}>
+                                                    {comment.authorId?.username || 'Utente'}
+                                                </Typography>
+                                                <Typography variant="caption">
+                                                    {getTimeAgo(comment.createdAt)}
+                                                </Typography>
+                                            </Stack>
+                                        }
+                                        secondary={comment.text}
                                     />
-                                </ListItemAvatar>
-                                {/* ! MODIFICATO: prima erano author e text hardcoded, ora sono dati reali */}
-                                <ListItemText
-                                    primary={
-                                        <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
-                                            <Typography variant="subtitle2"
-                                                onClick={() => navigate(`/profile/${comment.authorId._id}`)}
-                                                sx={{ fontWeight: 'bold ', cursor: 'pointer' }}>
-                                                {comment.authorId?.username || 'Utente'}
-                                            </Typography>
-                                            <Typography variant="caption">
-                                                {getTimeAgo(comment.createdAt)}
-                                            </Typography>
-                                        </Stack>
-                                    }
-                                    secondary={comment.text}
-                                />
-                            </ListItem>
-                        ))
-                        : (
-                            <Typography variant="body2" color="text.secondary" sx={{ padding: 2 }}>
-                                Nessun commento ancora. Sii il primo a commentare!
-                            </Typography>
-                        )
-                    }
-                </List>
+                                </ListItem>
+                            ))
+                            : (
+                                <Typography variant="body2" color="text.secondary" sx={{ padding: 2 }}>
+                                    Nessun commento ancora. Sii il primo a commentare!
+                                </Typography>
+                            )
+                        }
+                    </List>
 
-                {/*
+                    {/*
                     Input per aggiungere un nuovo commento:
                     - TextField per l'input testuale, controllato dallo stato commentText
                     - IconButton con SendIcon per inviare il commento
@@ -273,40 +274,41 @@ export default function PostDetail() {
                     Ora è collegato allo stato e alla funzione handleSendComment.
                     Supporta anche l'invio tramite il tasto Invio (Enter).
                 */}
-                <Stack
-                    direction='row'
-                    spacing={1}
-                    sx={{ width: '100%', padding: 1, alignSelf: 'center', alignItems: 'center', borderTop: 'thin solid' }}>
+                    <Stack
+                        direction='row'
+                        spacing={1}
+                        sx={{ width: '100%', padding: 1, alignSelf: 'center', alignItems: 'center', borderTop: 'thin solid' }}>
 
-                    {/* Bottone Like e Conteggio */}
-                    <Stack direction="row" sx={{ alignItems: 'center' }}>
-                        <IconButton onClick={handleToggleLike} color="error" aria-label="like">
-                            {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                        {/* Bottone Like e Conteggio */}
+                        <Stack direction="row" sx={{ alignItems: 'center' }}>
+                            <IconButton onClick={handleToggleLike} color="error" aria-label="like">
+                                {liked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                            </IconButton>
+                            <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold' }}>
+                                {/* Se l'array esiste mostra la lunghezza, altrimenti 0 */}
+                                {post?.likes?.length || 0}
+                            </Typography>
+                        </Stack>
+
+                        {/* Campo di testo */}
+                        <TextField
+                            fullWidth
+                            size="small"
+                            placeholder="Scrivi un commento..."
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                            // Invia il commento alla pressione di Invio (senza Shift)
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSendComment();
+                                }
+                            }}
+                        />
+                        <IconButton onClick={handleSendComment} disabled={!commentText.trim()}>
+                            <SendIcon />
                         </IconButton>
-                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 'bold' }}>
-                            {/* Se l'array esiste mostra la lunghezza, altrimenti 0 */}
-                            {post?.likes?.length || 0}
-                        </Typography>
                     </Stack>
-
-                    {/* Campo di testo */}
-                    <TextField
-                        fullWidth
-                        size="small"
-                        placeholder="Scrivi un commento..."
-                        value={commentText}
-                        onChange={(e) => setCommentText(e.target.value)}
-                        // Invia il commento alla pressione di Invio (senza Shift)
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                handleSendComment();
-                            }
-                        }}
-                    />
-                    <IconButton onClick={handleSendComment} disabled={!commentText.trim()}>
-                        <SendIcon />
-                    </IconButton>
                 </Stack>
             </Stack>
         </Stack>

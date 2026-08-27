@@ -113,7 +113,7 @@ export default function Login() {
         } catch (error) {
             // Cattura eventuali errori (es. credenziali errate) e mostra l'alert nella UI
             // ! Cerchiamo il messaggio dal backend. Se non c'è (es. server spento), usiamo un messaggio generico
-            setError(error.response?.data?.message||'Errore durante il login')
+            setError(error.response?.data?.message || 'Errore durante il login')
         }
     };
 
@@ -138,14 +138,14 @@ export default function Login() {
         } catch (error) {
             // Cattura errori (es. email o username già esistenti) e mostra l'alert nella UI
             // ! Cerchiamo il messaggio dal backend. Se non c'è (es. server spento), usiamo un messaggio generico
-            setError(error.response?.data?.message||'Errore durante la registrazione')
+            setError(error.response?.data?.message || 'Errore durante la registrazione')
         }
     };
 
     return (
         // Box principale che contiene tutto il contenuto della pagina di accesso.
         // È usata come contenitore flessibile per organizzare il lato testo e il lato form.
-        <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, height: '97vh' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, height: '100vh', padding: 2 }}>
             {/* Stack verticale che contiene il testo introduttivo dell'applicazione. */}
             <Stack sx={{ width: '50%', justifyContent: 'center' }}>
                 {/* Titolo principale della pagina. */}

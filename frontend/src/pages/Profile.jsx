@@ -163,7 +163,7 @@ export default function Profile() {
 
         // Stack verticale principale del profilo: contiene tutte le sezioni della pagina in ordine logico.
         // Ho usato uno Stack in colonna perché gli elementi del profilo devono essere mostrati uno sotto l'altro: intro, azioni, post.
-        <Stack spacing={3}>
+        <Stack spacing={3} sx={{ padding: 2 }}>
             {/* Sezione superiore del profilo: unisce avatar e informazioni dell'utente. */}
             {/* Ho raggruppato questi elementi in uno Stack orizzontale perché l'immagine del profilo e i dati testuali devono apparire affiancati. */}
             <Stack direction='row' spacing={10} sx={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -180,21 +180,29 @@ export default function Profile() {
                     <Typography component='h1' variant='h3'>
                         {profileUser.username}
                     </Typography>
-                    <Typography component='p' variant='h6'>
+                    <Typography component='p' variant='h6' color='textSecondary' sx={{fontStyle:'italic'}}>
                         {/* Se bio è una stringa vuota (il default del modello), mostriamo un testo alternativo */}
                         {profileUser.bio || "Nessuna bio disponibile."}
                     </Typography>
-                    <Typography component='p' variant='h6'>
-                        {/* .join(', ') unisce l'array in una stringa leggibile: ["Chitarra", "Basso"] → "Chitarra, Basso" */}
-                        Strumenti musicali: {profileUser.instruments.length > 0
-                            ? profileUser.instruments.join(', ')
-                            : "Non specificati"}
-                    </Typography>
-                    <Typography component='p' variant='h6'>
-                        Generi musicali: {profileUser.genres.length > 0
-                            ? profileUser.genres.join(', ')
-                            : "Non specificati"}
-                    </Typography>
+                    {/* Chip per strumenti e generi musicali, uguali alla UserCard */}
+                    <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ alignItems: "center" }}>
+                        <Typography variant="h6" fontWeight="bold">Suona:</Typography>
+                        {profileUser.instruments.length > 0
+                            ? profileUser.instruments.map(inst => (
+                                <Chip key={inst} label={inst} color="primary" size="small" />
+                            ))
+                            : <Typography variant="body2" color="textSecondary">Non specificati</Typography>
+                        }
+                    </Stack>
+                    <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ alignItems: "center" }}>
+                        <Typography variant="h6" fontWeight="bold">Generi:</Typography>
+                        {profileUser.genres.length > 0
+                            ? profileUser.genres.map(genre => (
+                                <Chip key={genre} label={genre} color="secondary" size="small" />
+                            ))
+                            : <Typography variant="body2" color="textSecondary">Non specificati</Typography>
+                        }
+                    </Stack>
                     <Typography component='p' variant='body1'>
                         {/* Contiamo quanti elementi ci sono negli array followers e following */}
                         {profileUser.followers.length} follower · {profileUser.following.length} seguiti

@@ -6,7 +6,8 @@ export default function MessageBubble({ text, isMine }) {
     return (
         <Box sx={{
             justifySelf: isMine ? 'end' : 'start',
-            backgroundColor: isMine ? 'lightgreen' : 'lightgrey',
+            backgroundColor: isMine ? 'primary.main' : 'secondary.main',
+            color: isMine ? 'primary.contrastText' : 'secondary.contrastText',
             padding: 2,
             margin: 1,
             borderRadius: 3,

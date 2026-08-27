@@ -208,10 +208,10 @@ export default function Chat() {
 
     // --- RENDERING ---
     return (
-        <Stack direction={"row"} sx={{ height: '100%' }}>
+        <Stack direction={"row"} divider={<Divider orientation="vertical" />} sx={{ height: '100%' }}>
 
             {/* SIDEBAR SINISTRA: Lista contatti e conversazioni (320px fissa) */}
-            <Stack spacing={2} sx={{ padding: 1, borderRight: 'thin groove', width: 320, flexShrink: 0, overflowY: 'auto' }}>
+            <Stack spacing={2} sx={{ padding: 1, width: 320, flexShrink: 0, overflowY: 'auto' }}>
 
                 {/* Barra di ricerca collegata allo stato searchText.
                     value e onChange la rendono un "controlled component":
@@ -311,7 +311,7 @@ export default function Chat() {
             </Stack>
 
             {/* AREA PRINCIPALE DESTRA: Messaggi della conversazione attiva */}
-            <Stack sx={{ flexGrow: 1, height: '100%' }}>
+            <Stack sx={{ flexGrow: 1, height: '100%', padding: 2 }}>
                 {activeChat ? (
                     <>
                         {/* HEADER: Nome dell'utente con cui stiamo chattando */}
@@ -363,7 +363,7 @@ export default function Chat() {
                                     }
                                 }}
                             />
-                            <IconButton onClick={handleSendMessage} disabled={!newMessageText.trim()}>
+                            <IconButton onClick={handleSendMessage} disabled={!newMessageText.trim()} color="primary">
                                 <SendIcon />
                             </IconButton>
                         </Stack>
