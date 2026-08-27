@@ -4,11 +4,7 @@ import MultiSelectFilter from "../components/MultiSelectFilter";
 import UserCard from "../components/UserCard";
 import SearchBar from "../components/SearchBar";
 import { getUsers } from "../services/userServices"; // !  importiamo la funzione che chiama GET /users
-
-// Elenco delle opzioni disponibili per il filtro degli strumenti musicali.
-const instruments = ["Arpa", "Basso", "Batteria", "Chitarra", "Pianoforte", "Voce"];
-// Elenco delle opzioni disponibili per il filtro dei generi musicali.
-const genres = ["Rock", "Pop", "Jazz", "Blues", "Metal", "Funk", "Classica", "Hip Hop"];
+import { instruments, genres } from "../utils/musicOptions";
 
 export default function Search() {
 

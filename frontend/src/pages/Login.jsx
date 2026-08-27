@@ -6,11 +6,7 @@ import { useState } from "react";
 import MultiSelectFilter from "../components/MultiSelectFilter";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-
-// Elenco delle opzioni disponibili per il filtro degli strumenti musicali.
-const instruments = ["Arpa", "Basso", "Batteria", "Chitarra", "Pianoforte", "Voce"];
-// Elenco delle opzioni disponibili per il filtro dei generi musicali.
-const genres = ["Rock", "Pop", "Jazz", "Blues", "Metal", "Funk", "Classica", "Hip Hop"];
+import { instruments, genres } from "../utils/musicOptions";
 
 // Pagina di accesso e registrazione dell'applicazione.
 // Qui vengono mostrati i due form principali e il passaggio tra le due modalità avviene tramite tab.
