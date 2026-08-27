@@ -54,7 +54,7 @@ export default function Profile() {
     // Calcoliamo se il profilo che stiamo guardando è il nostro:
     // - se non c'è un :id nell'URL → è il nostro profilo
     // - se c'è un :id ma coincide con il nostro → è sempre il nostro profilo
-    const isOwnProfile = !id || id === loggedUser?._id;
+    const isOwnProfile = !id || id === loggedUser?.id;
 
     // useEffect si attiva ogni volta che cambia l'id nell'URL.
     // Questo permette di ricaricare i dati se navighi da un profilo all'altro
