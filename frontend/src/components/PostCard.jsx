@@ -28,8 +28,8 @@ export default function PostCard({ post, onDelete }) {
 
     // true se il post appartiene all'utente loggato.
     // post.userID._id è l'ID dell'autore (stringa dopo il populate del backend).
-    // lo confrontiamo con user._id, l'ID dell'utente loggato salvato nel contesto.
-    const isOwner = user?._id === post.userID._id;
+    // lo confrontiamo con user.id, l'ID dell'utente loggato salvato nel contesto.
+    const isOwner = user?.id === post.userID._id;
 
     // ! NUOVO: chiama DELETE /posts/:id e, se va a buon fine, notifica il padre
     // tramite onDelete così la card sparisce dalla lista senza ricaricare la pagina.
