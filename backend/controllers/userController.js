@@ -111,6 +111,10 @@ async function getPosts(req, res) {
     try {
         // Cerchiamo tutti i post dove il campo userID corrisponde all'ID dell'utente
         const posts = await Post.find({ userID: req.params.id })
+            // Popoliamo l'autore per avere username e ID corretti nel frontend
+            .populate('userID', 'username')
+            // Ordiniamo in modo decrescente (-1) per vedere prima i post più recenti
+            .sort({ createdAt: -1 });
         res.json(posts)
     } catch (error) {
         res.status(500).json({ message: 'Errore nel recupero dei post', error })
