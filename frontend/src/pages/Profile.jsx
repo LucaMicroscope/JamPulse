@@ -3,13 +3,15 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Avatar, Button, CircularProgress, Stack, Typography, Box, TextField, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import PostCard from "../components/PostCard";
+import MultiSelectFilter from "../components/MultiSelectFilter";
 import { useAuth } from "../context/AuthContext";
 import { getLoggedUser, getUserById, getPosts, follow, unfollow, updateProfile } from "../services/userServices";
+import { instruments, genres } from "../utils/musicOptions";
 
 // Dimensione dell'avatar del profilo.
 // Ho scelto di tenerla in una costante per evitare valori hard-coded sparsi nel componente
 // e rendere più semplice eventuali modifiche future al layout.
-const avatarSize = 300;
+const avatarSize = 250;
 
 // Pagina del profilo utente.
 // Mostra l'avatar, le informazioni principali e la lista dei post pubblicati dall'utente.
@@ -45,8 +47,8 @@ export default function Profile() {
     // Sono separati da profileUser così l'utente può modificarli senza alterare
     // i dati visualizzati finché non salva.
     const [editBio, setEditBio] = useState('');
-    const [editInstruments, setEditInstruments] = useState('');
-    const [editGenres, setEditGenres] = useState('');
+    const [editInstruments, setEditInstruments] = useState([]);
+    const [editGenres, setEditGenres] = useState([]);
 
     // feedback visivo durante il salvataggio (disabilita il bottone Salva)
     const [saving, setSaving] = useState(false);
@@ -81,8 +83,8 @@ export default function Profile() {
                 // Gli array instruments e genres li convertiamo in stringa separata da virgola
                 // per renderli editabili in un TextField semplice.
                 setEditBio(user.bio || '');
-                setEditInstruments(user.instruments?.join(', ') || '');
-                setEditGenres(user.genres?.join(', ') || '');
+                setEditInstruments(user.instruments || []);
+                setEditGenres(user.genres || []);
 
                 // Controlliamo se l'utente loggato è già tra i follower del profilo visualizzato.
                 // user.followers è un array di ObjectId (che arrivano come stringhe dal JSON).
@@ -130,10 +132,8 @@ export default function Profile() {
         try {
             const updated = await updateProfile({
                 bio: editBio,
-                // split(',') divide la stringa per virgola, map(trim) rimuove gli spazi
-                // intorno a ogni elemento, filter(Boolean) scarta le stringhe vuote
-                instruments: editInstruments.split(',').map(s => s.trim()).filter(Boolean),
-                genres: editGenres.split(',').map(s => s.trim()).filter(Boolean),
+                instruments: editInstruments,
+                genres: editGenres,
             });
             // Aggiorniamo i dati visualizzati con quelli appena salvati
             setProfileUser(updated);
@@ -163,10 +163,10 @@ export default function Profile() {
 
         // Stack verticale principale del profilo: contiene tutte le sezioni della pagina in ordine logico.
         // Ho usato uno Stack in colonna perché gli elementi del profilo devono essere mostrati uno sotto l'altro: intro, azioni, post.
-        <Stack spacing={3} sx={{ padding: 2 }}>
+        <Stack spacing={3} sx={{ padding: 2, width: '100%' }}>
             {/* Sezione superiore del profilo: unisce avatar e informazioni dell'utente. */}
             {/* Ho raggruppato questi elementi in uno Stack orizzontale perché l'immagine del profilo e i dati testuali devono apparire affiancati. */}
-            <Stack direction='row' spacing={10} sx={{ justifyContent: 'center', alignItems: 'center' }}>
+            <Stack direction={{ sm: 'column', md: 'row' }} spacing={10} sx={{ justifyContent: 'center', alignItems: 'center' }}>
                 <Avatar
                     alt={profileUser.username}
                     // Per ora usiamo un avatar generato automaticamente dal nome utente.
@@ -176,16 +176,16 @@ export default function Profile() {
 
                 {/* Blocco delle informazioni utente: raccoglie nome, biografia e dettagli musicali. */}
                 {/* Ho usato uno Stack verticale perché queste informazioni sono correlate tra loro e vanno mostrate in colonna. */}
-                <Stack spacing={3} sx={{ justifyContent: 'center', maxWidth: '50%' }}>
-                    <Typography component='h1' variant='h3'>
+                <Stack spacing={3} sx={{ justifyContent: 'center', maxWidth: { sm: '100%', md: '50%' } }}>
+                    <Typography component='h1' variant='h3' align="center">
                         {profileUser.username}
                     </Typography>
-                    <Typography component='p' variant='h6' color='textSecondary' sx={{fontStyle:'italic'}}>
+                    <Typography component='p' variant='h6' color='textSecondary' sx={{ fontStyle: 'italic' }}>
                         {/* Se bio è una stringa vuota (il default del modello), mostriamo un testo alternativo */}
                         {profileUser.bio || "Nessuna bio disponibile."}
                     </Typography>
                     {/* Chip per strumenti e generi musicali, uguali alla UserCard */}
-                    <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ alignItems: "center" }}>
+                    <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap', alignItems: "center" }}>
                         <Typography variant="h6" fontWeight="bold">Suona:</Typography>
                         {profileUser.instruments.length > 0
                             ? profileUser.instruments.map(inst => (
@@ -194,7 +194,7 @@ export default function Profile() {
                             : <Typography variant="body2" color="textSecondary">Non specificati</Typography>
                         }
                     </Stack>
-                    <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ alignItems: "center" }}>
+                    <Stack direction="row" spacing={1} useFlexGap sx={{ flexWrap: 'wrap', alignItems: "center" }}>
                         <Typography variant="h6" fontWeight="bold">Generi:</Typography>
                         {profileUser.genres.length > 0
                             ? profileUser.genres.map(genre => (
@@ -203,7 +203,7 @@ export default function Profile() {
                             : <Typography variant="body2" color="textSecondary">Non specificati</Typography>
                         }
                     </Stack>
-                    <Typography component='p' variant='body1'>
+                    <Typography component='p' variant='body1' align="center">
                         {/* Contiamo quanti elementi ci sono negli array followers e following */}
                         {profileUser.followers.length} follower · {profileUser.following.length} seguiti
                     </Typography>
@@ -248,24 +248,22 @@ export default function Profile() {
                                     onChange={(e) => setEditBio(e.target.value)}
                                     placeholder="Raccontati in poche parole..."
                                 />
-                                {/* Strumenti: stringa separata da virgola, convertita in array al salvataggio.
-                                    Es: "Chitarra, Basso, Batteria" */}
-                                <TextField
+                                {/* ! MultiSelectFilter passandogli la costante instruments */}
+                                <MultiSelectFilter
+                                    labelId="instruments-select-label"
                                     label="Strumenti musicali"
-                                    fullWidth
                                     value={editInstruments}
-                                    onChange={(e) => setEditInstruments(e.target.value)}
-                                    placeholder="Es: Chitarra, Basso, Batteria"
-                                    helperText="Separali con una virgola"
+                                    handleChange={(e) => setEditInstruments(e.target.value)}
+                                    options={instruments}
                                 />
-                                {/* Generi: stesso approccio degli strumenti */}
-                                <TextField
+
+                                {/* ! MultiSelectFilter passandogli la costante genres */}
+                                <MultiSelectFilter
+                                    labelId="genres-select-label"
                                     label="Generi musicali"
-                                    fullWidth
                                     value={editGenres}
-                                    onChange={(e) => setEditGenres(e.target.value)}
-                                    placeholder="Es: Rock, Jazz, Blues"
-                                    helperText="Separali con una virgola"
+                                    handleChange={(e) => setEditGenres(e.target.value)}
+                                    options={genres}
                                 />
                             </Stack>
                         </DialogContent>
@@ -291,7 +289,7 @@ export default function Profile() {
                     // 'auto-fill' crea colonne rigide da 370px.                 
                     gridTemplateColumns: 'repeat(auto-fill, 370px)',
                     gap: 3, // Spaziatura di 24px (uguale a spacing={3} dello Stack)
-                    justifyContent: 'center', // Centra l'intera griglia rispetto alla pagina                
+                    justifyContent: 'center', // Centra l'intera griglia rispetto alla pagina                                  
                 }}
             >
                 {posts.length > 0
