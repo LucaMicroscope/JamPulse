@@ -5,7 +5,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     Avatar, Box, CircularProgress, Divider, List, ListItem,
-    ListItemAvatar, ListItemText, Stack, Typography, TextField, IconButton
+    ListItemAvatar, ListItemText, Stack, Typography, TextField, IconButton,
+    useTheme
 } from "@mui/material";
 import UserBadge from "../components/UserBadge";
 import SendIcon from '@mui/icons-material/Send';
@@ -32,6 +33,8 @@ export default function PostDetail() {
 
     // ! NUOVO: hook per tornare alla pagina precedente quando si clicca la X
     const navigate = useNavigate();
+
+    const theme = useTheme()
 
     // ! NUOVO: stato per i dati del post (immagine, descrizione, autore...)
     const [post, setPost] = useState(null);
@@ -140,13 +143,12 @@ export default function PostDetail() {
         <Stack sx={{ height: '100vh', justifyContent: 'center', padding: 2 }}>
             {/* Area principale del dettaglio post: immagine + colonna delle informazioni.*/}
             <Stack
-                direction='row'
-                spacing={2}
+                direction={{ xs: 'column', lg: 'row' }}
                 sx={{
                     flexGrow: 1,
-                    backgroundColor: 'lightgray',
-                    borderRadius: 8,
-                    maxHeight: '90vh',
+                    backgroundColor: theme.palette.background.paper,
+                    borderRadius: 4,
+                    maxHeight: { xs: 'none', lg: '90vh' },
                     overflow: 'hidden'
                 }}
             >
@@ -163,53 +165,58 @@ export default function PostDetail() {
                         src={post.media}
                         alt="Immagine del post"
                         sx={{
-                            width: '50%',
-                            objectFit: 'cover'
+                            width: { xs: '100%', lg: '50%' },
+                            maxHeight: { xs: '50vh', lg: 'none' },
+                            objectFit: 'contain',
+                            backgroundColor: 'black'
                         }}
                     />
                 ) : (
                     // Placeholder quando il post non ha immagine
                     <Box
                         sx={{
-                            width: '50%',
-                            backgroundColor: '#ccc',
+                            width: { xs: '100%', lg: '50%' },
+                            backgroundColor: 'black',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center'
                         }}
                     >
-                        <Typography color="text.secondary">Nessuna immagine</Typography>
+                        <Typography color="textSecondary">Nessuna immagine</Typography>
                     </Box>
                 )}
 
                 {/* Colonna destra: badge autore, descrizione, lista commenti e input per nuovi commenti */}
-                <Stack sx={{ alignItems: 'start', justifyContent: 'space-between', width: '50%' }}>
+                <Stack sx={{
+                    alignItems: 'start',
+                    justifyContent: 'space-between',
+                    width: { xs: '100%', lg: '50%' },
+                    padding: 1,                    
+                    border:'solid',
+                    maxHeight:{xs:'47%',lg:'100%'}
+                }}>
                     {/*
                     Bottone X in alto a destra per chiudere il dettaglio e tornare indietro.
                     Usiamo navigate(-1) per tornare alla pagina precedente nella cronologia,
                     così funziona sia se si arriva dalla Home che da un profilo o dalla Search.
                 */}
-                    <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-                        <IconButton onClick={() => navigate(-1)} aria-label="Chiudi">
+                    <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between' }}>
+                        <Stack onClick={() => navigate(`/profile/${post.userID?._id}`)} sx={{ cursor: "pointer" }}>
+                            <UserBadge
+                                username={post.userID?.username}
+                                userId={post.userID?._id}
+                            />
+                        </Stack>
+                        <IconButton onClick={() => navigate(-1)} aria-label="Chiudi" sx={{ cursor: 'pointer' }}>
                             <CloseIcon />
                         </IconButton>
-                    </Box>
-                    {/*
-                    ! MODIFICATO: prima UserBadge non accettava props e mostrava dati finti.
-                    Ora passiamo username e userId del vero autore del post,
-                    così il badge è cliccabile e porta al profilo corretto.
-                    post.userID viene popolato dal backend con .populate('userID', 'username').
-                */}
-                    <UserBadge
-                        username={post.userID?.username}
-                        userId={post.userID?._id}
-                    />
+                    </Stack>
 
                     {/*
                     Descrizione del post: testo libero inserito dall'autore.
                     ! MODIFICATO: prima era testo hardcoded, ora è post.content reale.
                 */}
-                    <Typography variant="body1" sx={{ padding: 1 }}>
+                    <Typography variant="body1" sx={{ padding: 1, maxHeight: '20vh' }}>
                         {post.content}
                     </Typography>
 
@@ -223,7 +230,7 @@ export default function PostDetail() {
                     Ora mappiamo i commenti reali arrivati dal backend.
                     Se non ci sono commenti, mostriamo un messaggio invitante.
                 */}
-                    <List sx={{ width: '99%', overflowY: 'auto', flexGrow: 1 }}>
+                    <List sx={{ width: '100%', overflowY: 'auto'}}>
                         {comments.length > 0
                             ? comments.map((comment) => (
                                 <ListItem key={comment._id} alignItems="start" sx={{ borderBottom: 'gray solid 1px' }}>
