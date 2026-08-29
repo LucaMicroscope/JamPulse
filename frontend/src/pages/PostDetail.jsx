@@ -191,9 +191,8 @@ export default function PostDetail() {
                     alignItems: 'start',
                     justifyContent: 'space-between',
                     width: { xs: '100%', lg: '50%' },
-                    padding: 1,                    
-                    border:'solid',
-                    maxHeight:{xs:'47%',lg:'100%'}
+                    padding: 1,
+                    maxHeight: { xs: '47%', lg: '100%' }
                 }}>
                     {/*
                     Bottone X in alto a destra per chiudere il dettaglio e tornare indietro.
@@ -230,7 +229,7 @@ export default function PostDetail() {
                     Ora mappiamo i commenti reali arrivati dal backend.
                     Se non ci sono commenti, mostriamo un messaggio invitante.
                 */}
-                    <List sx={{ width: '100%', overflowY: 'auto'}}>
+                    <List sx={{ width: '100%', overflowY: 'auto' }}>
                         {comments.length > 0
                             ? comments.map((comment) => (
                                 <ListItem key={comment._id} alignItems="start" sx={{ borderBottom: 'gray solid 1px' }}>

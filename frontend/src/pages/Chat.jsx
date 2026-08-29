@@ -337,7 +337,7 @@ export default function Chat() {
                             </IconButton>
                             <Stack
                                 onClick={() => navigate(`/profile/${getOtherUser(activeChat)?._id}`)}
-                                sx={{ border: 'solid', cursor: 'pointer' }}>
+                                sx={{ cursor: 'pointer' }}>
                                 <UserBadge
                                     username={getOtherUser(activeChat)?.username || "Utente"}
                                     userId={getOtherUser(activeChat)?._id}
