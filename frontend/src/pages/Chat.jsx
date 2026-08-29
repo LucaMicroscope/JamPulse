@@ -17,7 +17,7 @@ import { getFollowing } from "../services/userServices";
 
 // useLocation ci permette di leggere lo "state" passato da navigate()
 // quando arriviamo in questa pagina da un'altra (es. dal tasto "Scrivi" in Search)
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 // Pagina dedicata alla sezione chat dell'applicazione.
 // La sidebar sinistra mostra due sezioni:
@@ -33,6 +33,7 @@ export default function Chat() {
     // dalla pagina Cerca tramite il tasto "Scrivi". Se arriviamo navigando
     // normalmente, location.state è null.
     const location = useLocation();
+    const navigate = useNavigate()
 
     // --- STATI PRINCIPALI ---
     const [chats, setChats] = useState([]);         // Tutte le chat di cui siamo partecipanti (dal backend)
@@ -334,10 +335,14 @@ export default function Chat() {
                                 sx={{ display: { xs: 'flex', md: 'none' } }}>
                                 <ArrowBackIcon />
                             </IconButton>
-                            <UserBadge
-                                username={getOtherUser(activeChat)?.username || "Utente"}
-                                userId={getOtherUser(activeChat)?._id}
-                            />
+                            <Stack
+                                onClick={() => navigate(`/profile/${getOtherUser(activeChat)?._id}`)}
+                                sx={{ border: 'solid', cursor: 'pointer' }}>
+                                <UserBadge
+                                    username={getOtherUser(activeChat)?.username || "Utente"}
+                                    userId={getOtherUser(activeChat)?._id}
+                                />
+                            </Stack>
                         </Stack>
                         <Divider />
 
