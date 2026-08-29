@@ -7,12 +7,18 @@ import MultiSelectFilter from "../components/MultiSelectFilter";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { instruments, genres } from "../utils/musicOptions";
+import { useTheme } from "@mui/material/styles";
+import Brightness4Icon from '@mui/icons-material/Brightness4'; // Luna
+import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sole
+import { useColorMode } from "../context/ThemeContext";
 
 // Pagina di accesso e registrazione dell'applicazione.
 // Qui vengono mostrati i due form principali e il passaggio tra le due modalità avviene tramite tab.
 // La pagina è divisa in due blocchi: testo introduttivo a sinistra e form di autenticazione a destra.
 export default function Login() {
     const { login, register } = useAuth(); // Prendiamo le funzioni dal Context
+    const theme = useTheme()
+    const colorMode = useColorMode()
     const navigate = useNavigate(); // Inizializziamo il navigatore
     // Stato che controlla quale tab è attiva: accesso o registrazione.
     const [tabValue, setTabValue] = useState('1');
@@ -139,120 +145,132 @@ export default function Login() {
     };
 
     return (
-        // Box principale che contiene tutto il contenuto della pagina di accesso.
-        // È usata come contenitore flessibile per organizzare il lato testo e il lato form.
-        <Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: 1, height: '100vh', padding: 2 }}>
-            {/* Stack verticale che contiene il testo introduttivo dell'applicazione. */}
-            <Stack sx={{ width: '50%', justifyContent: 'center' }}>
-                {/* Titolo principale della pagina. */}
-                <Typography component='h1' variant='h2'>Benvenuto su JamPulse!</Typography>
+        <>
+            <Stack direction={'row-reverse'}>
+                <Button onClick={colorMode.toggleColorMode}
+                    startIcon={theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}>
+                    <Typography>
+                        {/* Cambiamo testo in base al tema attuale */}
+                        {theme.palette.mode === 'dark' ? 'Tema Chiaro' : 'Tema Scuro'}
+                    </Typography>
+                </Button>
 
-                {/* Descrizione introduttiva dell'applicazione. */}
-                <Typography component='h2' variant='h6'>
-                    Connettiti con i musicisti intorno a te.
-                    Che tu stia cercando la voce perfetta per la tua band,
-                    un chitarrista per una jam session o semplicemente un posto dove condividere la tua musica,
-                    JamPulse è il palco giusto per te.
-                </Typography>
             </Stack>
+            {/* Stack principale che contiene tutto il contenuto della pagina di accesso.
+            //È usata come contenitore flessibile per organizzare il lato testo e il lato form.*/}
+            <Stack direction={{ sm: "column", md: 'row' }} spacing={2} sx={{ flexGrow: 1, height: '93vh', padding: 2, justifyContent: 'space-evenly' }}>
+                {/* Stack verticale che contiene il testo introduttivo dell'applicazione. */}
+                <Stack sx={{ width: { sm: '100%', md: '40%' }, justifyContent: 'center' }}>
+                    {/* Titolo principale della pagina. */}
+                    <Typography component='h1' variant='h2' align="center">Benvenuto su JamPulse!</Typography>
 
-            {/* Box sul lato destro che contiene il form di accesso e registrazione. */}
-            <Box sx={{ width: '50%', alignContent: 'center' }}>
-                {/* Contesto dei tab che gestisce lo stato attivo tra accesso e registrazione. */}
-                <TabContext value={tabValue}>
-                    {/* Box che contiene i tab di selezione tra accesso e registrazione. */}
-                    <Box sx={{ justifyItems: 'center' }}>
-                        <TabList onChange={tabChange}>
-                            <Tab label='ACCEDI' value='1'></Tab>
-                            <Tab label='REGISTRATI' value='2'></Tab>
-                        </TabList>
-                    </Box>
+                    {/* Descrizione introduttiva dell'applicazione. */}
+                    <Typography component='h2' variant='h6' align="justify">
+                        Connettiti con i musicisti intorno a te.
+                        Che tu stia cercando la voce perfetta per la tua band,
+                        un chitarrista per una jam session o semplicemente un posto dove condividere la tua musica,
+                        JamPulse è il palco giusto per te.
+                    </Typography>
+                </Stack>
 
-                    {/* Mostriamo l'errore sopra i form, se presente */}
-                    {error && (
-                        <Alert severity="error" sx={{ mx: 3, mt: 1 }}>
-                            {error}
-                        </Alert>
-                    )}
+                {/* Box sul lato destro che contiene il form di accesso e registrazione. */}
+                <Box sx={{ width: { sm: '100%', md: '40%' }, alignContent: 'center' }}>
+                    {/* Contesto dei tab che gestisce lo stato attivo tra accesso e registrazione. */}
+                    <TabContext value={tabValue}>
+                        {/* Box che contiene i tab di selezione tra accesso e registrazione. */}
+                        <Box sx={{ justifyItems: 'center' }}>
+                            <TabList onChange={tabChange}>
+                                <Tab label='ACCEDI' value='1'></Tab>
+                                <Tab label='REGISTRATI' value='2'></Tab>
+                            </TabList>
+                        </Box>
 
-                    {/* Pannello dedicato al login. */}
-                    <TabPanel value='1'>
-                        <form onSubmit={handleLogin}>
-                            {/* Stack verticale per impilare i campi del form con spazio uniforme. */}
-                            <Stack spacing={2}>
-                                <TextField
-                                    fullWidth
-                                    required
-                                    label='Username'
-                                    name="username"
-                                    value={loginData.username}
-                                    onChange={handleLoginChange}
-                                />
-                                <TextField
-                                    fullWidth
-                                    required
-                                    label='Password'
-                                    type="password"
-                                    name="password"
-                                    value={loginData.password}
-                                    onChange={handleLoginChange}
-                                />
-                                <Button type="submit" variant="contained">Accedi</Button>
-                            </Stack>
-                        </form>
-                    </TabPanel>
+                        {/* Mostriamo l'errore sopra i form, se presente */}
+                        {error && (
+                            <Alert severity="error" sx={{ mx: 3, mt: 1 }}>
+                                {error}
+                            </Alert>
+                        )}
 
-                    {/* Pannello dedicato alla registrazione. */}
-                    <TabPanel value='2'>
-                        <form onSubmit={handleRegister}>
-                            {/* Stack verticale per organizzare i campi di registrazione in modo ordinato. */}
-                            <Stack spacing={2}>
-                                <TextField
-                                    fullWidth
-                                    required
-                                    label='Email'
-                                    type="email"
-                                    name="email"
-                                    value={registerData.email}
-                                    onChange={handleRegisterChange}
-                                />
-                                <TextField
-                                    fullWidth
-                                    required
-                                    label='Username'
-                                    name="username"
-                                    value={registerData.username}
-                                    onChange={handleRegisterChange}
-                                />
-                                <TextField
-                                    fullWidth
-                                    required
-                                    label='Password'
-                                    type="password"
-                                    name="password"
-                                    value={registerData.password}
-                                    onChange={handleRegisterChange}
-                                />
-                                <MultiSelectFilter
-                                    labelId='instrument-select-label'
-                                    value={registerData.instruments}
-                                    handleChange={handleInstrumentsChange}
-                                    label='Strumenti Musicali'
-                                    options={instruments}
-                                />
-                                <MultiSelectFilter
-                                    labelId='genre-select-label'
-                                    value={registerData.genres}
-                                    handleChange={handleGenresChange}
-                                    label='Generi Musicali'
-                                    options={genres}
-                                />
-                                <Button type="submit" variant="contained">Registrati</Button>
-                            </Stack>
-                        </form>
-                    </TabPanel>
-                </TabContext>
-            </Box>
-        </Box>
+                        {/* Pannello dedicato al login. */}
+                        <TabPanel value='1'>
+                            <form onSubmit={handleLogin}>
+                                {/* Stack verticale per impilare i campi del form con spazio uniforme. */}
+                                <Stack spacing={2}>
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        label='Username'
+                                        name="username"
+                                        value={loginData.username}
+                                        onChange={handleLoginChange}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        label='Password'
+                                        type="password"
+                                        name="password"
+                                        value={loginData.password}
+                                        onChange={handleLoginChange}
+                                    />
+                                    <Button type="submit" variant="contained">Accedi</Button>
+                                </Stack>
+                            </form>
+                        </TabPanel>
+
+                        {/* Pannello dedicato alla registrazione. */}
+                        <TabPanel value='2'>
+                            <form onSubmit={handleRegister}>
+                                {/* Stack verticale per organizzare i campi di registrazione in modo ordinato. */}
+                                <Stack spacing={2}>
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        label='Email'
+                                        type="email"
+                                        name="email"
+                                        value={registerData.email}
+                                        onChange={handleRegisterChange}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        label='Username'
+                                        name="username"
+                                        value={registerData.username}
+                                        onChange={handleRegisterChange}
+                                    />
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        label='Password'
+                                        type="password"
+                                        name="password"
+                                        value={registerData.password}
+                                        onChange={handleRegisterChange}
+                                    />
+                                    <MultiSelectFilter
+                                        labelId='instrument-select-label'
+                                        value={registerData.instruments}
+                                        handleChange={handleInstrumentsChange}
+                                        label='Strumenti Musicali'
+                                        options={instruments}
+                                    />
+                                    <MultiSelectFilter
+                                        labelId='genre-select-label'
+                                        value={registerData.genres}
+                                        handleChange={handleGenresChange}
+                                        label='Generi Musicali'
+                                        options={genres}
+                                    />
+                                    <Button type="submit" variant="contained">Registrati</Button>
+                                </Stack>
+                            </form>
+                        </TabPanel>
+                    </TabContext>
+                </Box>
+            </Stack>
+        </>
     );
 }
