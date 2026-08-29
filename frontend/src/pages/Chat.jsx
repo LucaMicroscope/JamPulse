@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 
 // ! REAL-TIME: importiamo il nostro hook custom per la gestione del socket
-import { useSocket } from "../hooks/useSocket";import { Box, Divider, IconButton, Stack, TextField, Typography } from "@mui/material";
+import { useSocket } from "../hooks/useSocket"; import { Box, Divider, IconButton, Stack, TextField, Typography } from "@mui/material";
 
 import SearchBar from "../components/SearchBar";
 import UserBadge from "../components/UserBadge";
 import SendIcon from '@mui/icons-material/Send';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import MessageBubble from "../components/MessageBubble";
 
 // Importiamo gli hook e le chiamate API necessarie
@@ -43,7 +44,7 @@ export default function Chat() {
     // Testo digitato nella barra di ricerca della sidebar.
     // Viene usato per filtrare sia i following che le chat già esistenti.
     const [searchText, setSearchText] = useState('');
-    
+
     // REAL-TIME: callback chiamata dal socket quando arriva un messaggio dall'altro utente.
     //  useCallback è fondamentale qui: senza di esso, ad ogni re-render di Chat verrebbe creata
     //  una NUOVA funzione, causando un loop infinito nell'useEffect di useSocket
@@ -150,7 +151,7 @@ export default function Chat() {
     };
 
     // Invia un nuovo messaggio nella chat attiva.
-        // Invia un nuovo messaggio nella chat attiva.
+    // Invia un nuovo messaggio nella chat attiva.
     const handleSendMessage = async () => {
         // Blocchiamo l'invio se il testo è vuoto o se non c'è una chat aperta
         if (!newMessageText.trim() || !activeChat) return;
@@ -208,10 +209,17 @@ export default function Chat() {
 
     // --- RENDERING ---
     return (
-        <Stack direction={"row"} divider={<Divider orientation="vertical" />} sx={{ height: '100%' }}>
+        <Stack direction={"row"} divider={<Divider orientation="vertical" sx={{ display: { xs: "none", md: 'block' } }} />} sx={{ height: '100%' }}>
 
-            {/* SIDEBAR SINISTRA: Lista contatti e conversazioni (320px fissa) */}
-            <Stack spacing={2} sx={{ padding: 1, width: 320, flexShrink: 0, overflowY: 'auto' }}>
+            {/* SIDEBAR SINISTRA: Lista contatti e conversazioni */}
+            <Stack spacing={2} sx={{
+                padding: 1,
+                width: { xs: '100%', md: '30%' },
+                maxWidth: { xs: '100%', md: 400 },
+                flexShrink: 0,
+                overflowY: 'auto',
+                display: { xs: activeChat ? 'none' : 'flex', md: 'flex' }
+            }}>
 
                 {/* Barra di ricerca collegata allo stato searchText.
                     value e onChange la rendono un "controlled component":
@@ -311,16 +319,26 @@ export default function Chat() {
             </Stack>
 
             {/* AREA PRINCIPALE DESTRA: Messaggi della conversazione attiva */}
-            <Stack sx={{ flexGrow: 1, height: '100%', padding: 2 }}>
+            <Stack sx={{
+                flexGrow: 1,
+                height: '100%',
+                padding: 2,
+                display: { xs: activeChat ? 'flex' : 'none', md: 'flex' }
+            }}>
                 {activeChat ? (
                     <>
                         {/* HEADER: Nome dell'utente con cui stiamo chattando */}
-                        <Box sx={{ p: 1 }}>
+                        <Stack direction='row' spacing={2} sx={{ p: 1 }}>
+                            <IconButton
+                                onClick={() => setActiveChat(null)}
+                                sx={{ display: { xs: 'flex', md: 'none' } }}>
+                                <ArrowBackIcon />
+                            </IconButton>
                             <UserBadge
                                 username={getOtherUser(activeChat)?.username || "Utente"}
                                 userId={getOtherUser(activeChat)?._id}
                             />
-                        </Box>
+                        </Stack>
                         <Divider />
 
                         {/* AREA MESSAGGI: lista dei MessageBubble.

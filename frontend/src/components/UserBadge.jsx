@@ -1,5 +1,4 @@
 import { Stack, Avatar, Typography } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
 // Componente riutilizzabile che mostra avatar + nome utente di un partecipante.
 //
@@ -13,7 +12,6 @@ import { useNavigate } from "react-router-dom";
 //   - username (string): nome utente da mostrare
 //   - userId (string): ID usato per navigare al profilo al click sull'avatar
 export default function UserBadge({ username, userId }) {
-    const navigate = useNavigate();
 
     const avatarSize = 48; // Ridotto da 80: più compatto nella sidebar della chat
 
@@ -43,10 +41,6 @@ export default function UserBadge({ username, userId }) {
                     height: avatarSize,
                     cursor: userId ? 'pointer' : 'default',
                     flexShrink: 0  // impedisce all'avatar di restringersi se il nome è lungo
-                }}
-                onClick={(e) => {
-                    e.stopPropagation();
-                    if (userId) navigate(`/profile/${userId}`);
                 }}
             />
             {/* Nome utente: testo semplice, non cliccabile.
