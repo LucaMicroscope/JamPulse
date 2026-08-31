@@ -35,14 +35,14 @@ const httpServer = http.createServer(app);
 // ! dal nostro frontend in locale.
 const io = new Server(httpServer, {
     cors: {
-        origin: 'http://localhost:5173'
+        origin: process.env.CORS_ORIGIN || '*'
     }
 });
 
 // * MIDDLEWARES ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 app.use(express.json()); // ! questo serve per utilizzare il middleware express.json() che permette di gestire le richieste con body in formato JSON
 app.use(cors({
-    origin: 'http://localhost:5173'
+    origin: process.env.CORS_ORIGIN || '*'
 })); // ! questo serve per utilizzare il middleware cors che permette di accettare le richieste HTTP in arrivo dal frontend
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

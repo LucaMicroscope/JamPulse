@@ -2,7 +2,7 @@
 //Serve per indicare l'URL base per le chiamate API e per aggiungere ad ogni richiesta il token
 import axios from 'axios'
 //prefisso globale per tutti gli URL delle richieste
-axios.defaults.baseURL = 'http://localhost:4000/api/v1'
+axios.defaults.baseURL = '/api/v1'
 //Interceptor che interviene prima che ogni richiesta parta verso il backend
 //config contiene tutte le informazioni della richiesta
 axios.interceptors.request.use((config) => {
