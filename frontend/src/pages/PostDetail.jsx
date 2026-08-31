@@ -69,7 +69,7 @@ export default function PostDetail() {
     // - Passiamo l'id del post corrente come activePostId
     // - Passiamo handleCommentReceived come callback per i commenti in arrivo
     // - Otteniamo emitSendComment per notificare gli altri utenti quando commentiamo noi
-    const { emitSendComment } = useSocket(null, () => {}, id, handleCommentReceived);
+    const { emitSendComment } = useSocket(null, () => { }, id, handleCommentReceived);
 
     // ! NUOVO: al montaggio del componente (o quando cambia l'ID nell'URL)
     // carichiamo il post e i suoi commenti dal backend in parallelo con Promise.all.
@@ -193,9 +193,9 @@ export default function PostDetail() {
                         alt="Immagine del post"
                         sx={{
                             width: { xs: '100%', lg: '50%' },
-                            maxHeight: { xs: '50vh', lg: 'none' },
+                            height: { xs: '50vh', lg: '100%' },
                             objectFit: 'contain',
-                            backgroundColor: 'black'
+                            backgroundColor: 'black',
                         }}
                     />
                 ) : (
@@ -203,6 +203,7 @@ export default function PostDetail() {
                     <Box
                         sx={{
                             width: { xs: '100%', lg: '50%' },
+                            height: { xs: '50vh', lg: '100%' },
                             backgroundColor: 'black',
                             display: 'flex',
                             alignItems: 'center',
@@ -215,11 +216,11 @@ export default function PostDetail() {
 
                 {/* Colonna destra: badge autore, descrizione, lista commenti e input per nuovi commenti */}
                 <Stack sx={{
-                    alignItems: 'start',
+
                     justifyContent: 'space-between',
                     width: { xs: '100%', lg: '50%' },
                     padding: 1,
-                    maxHeight: { xs: '47%', lg: '100%' }
+                    height: { xs: '48%', lg: '100%' }
                 }}>
                     {/*
                     Bottone X in alto a destra per chiudere il dettaglio e tornare indietro.
