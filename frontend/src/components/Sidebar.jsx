@@ -1,22 +1,18 @@
-import Drawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemButton from "@mui/material/ListItemButton";
-import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
-import AppleIcon from "@mui/icons-material/Apple";
-import SearchIcon from "@mui/icons-material/Search";
-import AccountBoxRoundedIcon from "@mui/icons-material/AccountBoxRounded";
+// 1. Librerie esterne (Routing)
+import { NavLink, useNavigate } from "react-router-dom";
+// 2. Componenti Material-UI Core
+import { Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Stack, useTheme } from "@mui/material";
+// 3. Icone Material-UI
 import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import LogoutIcon from '@mui/icons-material/Logout';
+import SearchIcon from "@mui/icons-material/Search";
+import ChatBubbleOutlineRoundedIcon from "@mui/icons-material/ChatBubbleOutlineRounded";
+import AccountBoxRoundedIcon from "@mui/icons-material/AccountBoxRounded";
 import CreateIcon from '@mui/icons-material/Create';
-import { NavLink } from "react-router-dom";
-import { Icon, Stack, Typography } from "@mui/material";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { useTheme } from "@mui/material/styles";
+import LogoutIcon from '@mui/icons-material/Logout';
 import Brightness4Icon from '@mui/icons-material/Brightness4'; // Luna
 import Brightness7Icon from '@mui/icons-material/Brightness7'; // Sole
+// 4. Context e Hook locali
+import { useAuth } from "../context/AuthContext";
 import { useColorMode } from "../context/ThemeContext";
 
 // Definisce le voci della sidebar come un array di oggetti.
@@ -63,17 +59,34 @@ export default function Sidebar() {
       {/* Contenitore principale della sidebar con layout verticale e spazio tra le sezioni. */}
       <Stack sx={{ justifyContent: 'space-between', flexGrow: 1 }}>
         {/* Sezione superiore: brand o home link. */}
-        <Stack>
+        <Stack sx={{ p: 1 }}>
           <NavLink
             to='/'
             style={{
               textDecoration: 'none'
             }}
           >
-            <ListItemButton sx={{ color: 'primary.main' }}>
-              <ListItemIcon sx={{ color: 'inherit' }}><AppleIcon /></ListItemIcon>
-              <ListItemText sx={{ display: { xs: 'none', sm: 'block' }, color: "inherit" }}>JamPulse</ListItemText>
-            </ListItemButton>
+            {/* 1. LOGO ESTESO (Testo + Icona) - Visibile solo su schermi grandi (sm in su) */}
+            <Box
+              component="img"
+              src={theme.palette.mode === 'dark' ? "/Logo/DesktopDark.png" : "/Logo/DesktopLight.png"}
+              alt="JamPulse Logo"
+              sx={{
+                display: { xs: 'none', sm: 'block' },
+                width: '100%'
+              }}
+            />
+
+            {/* 2. LOGO RIDOTTO (Solo J) - Visibile solo su smartphone (xs) */}
+            <Box
+              component="img"
+              src={theme.palette.mode === 'dark' ? "/Logo/MobileDark.png" : "/Logo/MobileLight.png"}
+              alt="JamPulse Logo Icon"
+              sx={{
+                display: { xs: 'block', sm: 'none' },
+                width:'100%'
+              }}
+            />
           </NavLink>
         </Stack>
 
@@ -87,7 +100,7 @@ export default function Sidebar() {
                 key={item.label}
                 style={({ isActive }) => ({
                   textDecoration: 'none',
-                  color: isActive ? theme.palette.primary.main : theme.palette.text.primary,
+                  color: isActive ? theme.palette.secondary.main : theme.palette.primary.main
                 })}
               >
                 <ListItemButton sx={{ justifyContent: 'center' }}>
