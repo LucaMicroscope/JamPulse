@@ -74,6 +74,31 @@ io.on('connection', (socket) => {
         console.log(`[Socket.IO] Messaggio inoltrato nella stanza: ${chatId}`);
     });
 
+    // ! REAL-TIME COMMENTI: il frontend emette 'join_post' quando l'utente apre un PostDetail.
+    // ! Aggiungiamo il client alla "stanza" del post (identificata dal suo ID),
+    // ! così potrà ricevere solo i commenti di quel post specifico.
+    socket.on('join_post', (postId) => {
+        socket.join(`post_${postId}`);
+        console.log(`[Socket.IO] Client ${socket.id} è entrato nella stanza del post: post_${postId}`);
+    });
+
+    // ! REAL-TIME COMMENTI: il frontend emette 'leave_post' quando l'utente
+    // ! chiude il dettaglio del post (smontaggio componente).
+    // ! Usciamo dalla stanza per non ricevere più aggiornamenti inutili.
+    socket.on('leave_post', (postId) => {
+        socket.leave(`post_${postId}`);
+        console.log(`[Socket.IO] Client ${socket.id} ha lasciato la stanza del post: post_${postId}`);
+    });
+
+    // ! REAL-TIME COMMENTI: il frontend emette 'send_comment' dopo aver salvato
+    // ! il commento nel DB via REST. Il server lo broadcast a tutti gli altri
+    // ! client nella stessa stanza (es. un amico che ha lo stesso post aperto).
+    socket.on('send_comment', ({ postId, comment }) => {
+        // ! socket.to(...) esclude chi ha emesso l'evento (che aggiorna già la sua UI localmente)
+        socket.to(`post_${postId}`).emit('receive_comment', comment);
+        console.log(`[Socket.IO] Commento inoltrato nella stanza: post_${postId}`);
+    });
+
     // ! EVENTO 'disconnect': viene chiamato automaticamente quando il client chiude il browser/tab.
     socket.on('disconnect', () => {
         console.log(`[Socket.IO] Client disconnesso: ${socket.id}`);

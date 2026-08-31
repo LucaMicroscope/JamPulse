@@ -1,7 +1,8 @@
 // ! MODIFICATO: aggiunti useState, useEffect, useParams per rendere la pagina dinamica.
 // Prima tutto era hardcoded (immagine fissa, commenti finti, utente finto).
 // Ora carichiamo i dati reali dal backend usando l'ID del post che arriva dall'URL.
-import { useState, useEffect } from "react";
+// ! AGGIORNATO: aggiunto supporto real-time per i commenti tramite Socket.IO.
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     Avatar, Box, CircularProgress, Divider, List, ListItem,
@@ -17,6 +18,8 @@ import { getComments, createComment } from "../services/commentServices";
 import { useAuth } from "../context/AuthContext";
 import CloseIcon from '@mui/icons-material/Close';
 import { getTimeAgo } from "../utils/timeUtils";
+// ! NUOVO REAL-TIME: importiamo l'hook useSocket per gestire la connessione WebSocket
+import { useSocket } from "../hooks/useSocket";
 
 // Pagina di dettaglio di un singolo post.
 // L'ID del post viene letto dall'URL (es. /posts/abc123) tramite useParams.
@@ -34,7 +37,7 @@ export default function PostDetail() {
     // ! NUOVO: hook per tornare alla pagina precedente quando si clicca la X
     const navigate = useNavigate();
 
-    const theme = useTheme()
+    const theme = useTheme();
 
     // ! NUOVO: stato per i dati del post (immagine, descrizione, autore...)
     const [post, setPost] = useState(null);
@@ -50,6 +53,23 @@ export default function PostDetail() {
 
     // ! NUOVO: messaggio di errore se qualcosa va storto
     const [error, setError] = useState(null);
+
+    // ! NUOVO REAL-TIME: callback chiamata quando arriva un commento da Socket.IO
+    // (cioè quando un ALTRO utente ha aperto lo stesso post e ha commentato).
+    // ! useCallback è fondamentale: stabilizza il riferimento della funzione tra i render.
+    // ! Senza useCallback, ad ogni render di PostDetail verrebbe creata una nuova funzione,
+    // ! causando l'effetto in useSocket di smontare e rimontare il listener continuamente.
+    const handleCommentReceived = useCallback((newComment) => {
+        // Aggiungiamo in coda il commento arrivato via WebSocket
+        setComments(prev => [...prev, newComment]);
+    }, []); // [] = nessuna dipendenza, la funzione non cambia mai
+
+    // ! NUOVO REAL-TIME: usiamo l'hook useSocket.
+    // - I primi due parametri (chat) sono null perché PostDetail non usa la chat
+    // - Passiamo l'id del post corrente come activePostId
+    // - Passiamo handleCommentReceived come callback per i commenti in arrivo
+    // - Otteniamo emitSendComment per notificare gli altri utenti quando commentiamo noi
+    const { emitSendComment } = useSocket(null, () => {}, id, handleCommentReceived);
 
     // ! NUOVO: al montaggio del componente (o quando cambia l'ID nell'URL)
     // carichiamo il post e i suoi commenti dal backend in parallelo con Promise.all.
@@ -84,11 +104,18 @@ export default function PostDetail() {
         if (!commentText.trim()) return;
 
         try {
-            // POST /api/v1/posts/:id/comments — il backend aggiunge l'autore tramite il token JWT
+            // POST /api/v1/posts/:id/comments — il backend aggiunge l'autore tramite il token JWT.
+            // ! createComment ora restituisce direttamente il commento (non wrappato),
+            // ! grazie al fix nel commentServices.js
             const newComment = await createComment(id, { text: commentText });
 
-            // Aggiungiamo il nuovo commento in fondo alla lista senza ricaricare tutto
+            // Aggiungiamo il nuovo commento in fondo alla lista senza ricaricare tutto.
+            // ! Questo aggiorna l'UI dell'utente che ha scritto il commento (ottimistico).
             setComments(prev => [...prev, newComment]);
+
+            // ! NUOVO REAL-TIME: notifichiamo via Socket.IO tutti gli altri utenti
+            // ! che hanno lo stesso post aperto, inviando loro il commento completo.
+            emitSendComment(id, newComment);
 
             // Puliamo il campo di input dopo l'invio
             setCommentText('');
@@ -98,13 +125,13 @@ export default function PostDetail() {
     }
 
     // Capiamo se l'utente loggato ha già messo like a questo post
-    const liked = post?.likes?.includes(user?.id)
+    const liked = post?.likes?.includes(user?.id);
 
     async function handleToggleLike() {
         try {
             // Chiamiamo l'API usando la funzione del servizio
-            const data = await toggleLike(id)
-            // Aggiorniamo lo stato locale del post per vedere subito il cuore colorato 
+            const data = await toggleLike(id);
+            // Aggiorniamo lo stato locale del post per vedere subito il cuore colorato
             // senza dover ricaricare l'intera pagina!
             setPost(prevPost => {
                 // Se il backend ci dice che ora c'è il like, aggiungiamo l'ID dell'utente all'array
@@ -115,9 +142,9 @@ export default function PostDetail() {
                 else {
                     return { ...prevPost, likes: prevPost.likes.filter(likeId => likeId !== user.id) };
                 }
-            })
+            });
         } catch (error) {
-            console.error('Errore durante il like', error)
+            console.error('Errore durante il like', error);
         }
     }
 
@@ -158,7 +185,7 @@ export default function PostDetail() {
                 Ora mostriamo post.media (URL reale salvato nel DB).
                 Se il post non ha immagine (post.media è stringa vuota), mostriamo
                 un placeholder grigio per mantenere il layout bicolonna.
-            */}
+                */}
                 {post.media ? (
                     <Box
                         component='img'
@@ -196,9 +223,8 @@ export default function PostDetail() {
                 }}>
                     {/*
                     Bottone X in alto a destra per chiudere il dettaglio e tornare indietro.
-                    Usiamo navigate(-1) per tornare alla pagina precedente nella cronologia,
-                    così funziona sia se si arriva dalla Home che da un profilo o dalla Search.
-                */}
+                    Usiamo navigate(-1) per tornare alla pagina precedente nella cronologia.
+                    */}
                     <Stack direction='row' sx={{ width: '100%', justifyContent: 'space-between' }}>
                         <Stack onClick={() => navigate(`/profile/${post.userID?._id}`)} sx={{ cursor: "pointer" }}>
                             <UserBadge
@@ -214,7 +240,7 @@ export default function PostDetail() {
                     {/*
                     Descrizione del post: testo libero inserito dall'autore.
                     ! MODIFICATO: prima era testo hardcoded, ora è post.content reale.
-                */}
+                    */}
                     <Typography variant="body1" sx={{ padding: 1, maxHeight: '20vh' }}>
                         {post.content}
                     </Typography>
@@ -224,12 +250,14 @@ export default function PostDetail() {
                     - Uso List per avere una struttura semantica e accessibile
                     - overflowY: 'auto' mantiene la lista scrollabile senza espandere l'altezza
                     - Ogni elemento è una ListItem con avatar e testo (autore + contenuto)
-                    
+
                     ! MODIFICATO: prima c'era un array di commenti mock hardcoded.
                     Ora mappiamo i commenti reali arrivati dal backend.
+                    ! AGGIORNATO REAL-TIME: la lista si aggiorna automaticamente anche
+                    quando arrivano commenti via Socket.IO da altri utenti.
                     Se non ci sono commenti, mostriamo un messaggio invitante.
-                */}
-                    <List sx={{ width: '100%', overflowY: 'auto' }}>
+                    */}
+                    <List sx={{ width: '100%', overflowY: 'auto', flexGrow: 1 }}>
                         {comments.length > 0
                             ? comments.map((comment) => (
                                 <ListItem key={comment._id} alignItems="start" sx={{ borderBottom: 'gray solid 1px' }}>
@@ -238,8 +266,8 @@ export default function PostDetail() {
                                         onClick={() => navigate(`/profile/${comment.authorId._id}`)}>
                                         {/*
                                         Avatar del commentatore generato dalle sue iniziali.
-                                        comment.userID viene popolato dal backend con username.
-                                    */}
+                                        comment.authorId viene popolato dal backend con username.
+                                        */}
                                         <Avatar
                                             src={`https://ui-avatars.com/api/?name=${comment.authorId?.username || 'U'}`}
                                             alt={comment.authorId?.username}
@@ -251,7 +279,7 @@ export default function PostDetail() {
                                             <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
                                                 <Typography variant="subtitle2"
                                                     onClick={() => navigate(`/profile/${comment.authorId._id}`)}
-                                                    sx={{ fontWeight: 'bold ', cursor: 'pointer' }}>
+                                                    sx={{ fontWeight: 'bold', cursor: 'pointer' }}>
                                                     {comment.authorId?.username || 'Utente'}
                                                 </Typography>
                                                 <Typography variant="caption">
@@ -275,11 +303,13 @@ export default function PostDetail() {
                     Input per aggiungere un nuovo commento:
                     - TextField per l'input testuale, controllato dallo stato commentText
                     - IconButton con SendIcon per inviare il commento
-                    
+
                     ! MODIFICATO: prima era puramente decorativo (nessun handler).
                     Ora è collegato allo stato e alla funzione handleSendComment.
                     Supporta anche l'invio tramite il tasto Invio (Enter).
-                */}
+                    ! AGGIORNATO REAL-TIME: handleSendComment ora emette anche l'evento
+                    Socket.IO per notificare gli altri utenti in tempo reale.
+                    */}
                     <Stack
                         direction='row'
                         spacing={1}
@@ -318,5 +348,5 @@ export default function PostDetail() {
                 </Stack>
             </Stack>
         </Stack>
-    )
+    );
 }
