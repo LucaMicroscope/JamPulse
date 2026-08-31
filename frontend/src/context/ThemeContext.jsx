@@ -16,12 +16,12 @@ const lightPalette = {
         main: '#037840', // Verde scuro
     },
     background: {
-        default: '#f5f5f5', // Grigio chiarissimo per lo sfondo
+        default: '#F0F4F8', // Celestino ghiaccio
         paper: '#ffffff',   // Bianco per le card e la sidebar
     },
     text: {
-        primary: '#000000',
-        secondary: '#494848',
+        primary: '#0B132B',
+        secondary: '#475569',
     }
 };
 
