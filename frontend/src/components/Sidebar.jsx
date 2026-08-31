@@ -84,7 +84,7 @@ export default function Sidebar() {
               alt="JamPulse Logo Icon"
               sx={{
                 display: { xs: 'block', sm: 'none' },
-                width:'100%'
+                width: '100%'
               }}
             />
           </NavLink>
