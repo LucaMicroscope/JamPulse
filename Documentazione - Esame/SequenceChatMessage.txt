@@ -1,0 +1,33 @@
+@startuml Sequence_ChatMessage
+autonumber
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Mittente" as Sender
+participant "Frontend Client 1" as FE1
+participant "Backend (Express / HTTP)" as BE
+participant "Socket.IO Server" as IO
+database "MongoDB" as DB
+participant "Frontend Client 2 (Destinatario)" as FE2
+
+Sender -> FE1: Scrive e invia un messaggio nella chat
+FE1 -> BE: POST /api/v1/chats/:id/messages { content }
+activate BE
+
+BE -> DB: Message.create({ chatID, senderID, content })
+activate DB
+DB --> BE: Restituisce il nuovo messaggio salvato
+deactivate DB
+
+BE -> DB: Chat.findByIdAndUpdate(chatID, { updatedAt })
+BE -> FE1: Restituisce 201 Created + message popolato
+deactivate BE
+
+== Sincronizzazione Real-Time ==
+FE1 -> IO: socket.emit('send_message', { chatId, message })
+activate IO
+IO -> FE2: socket.to(chatId).emit('receive_message', message)
+deactivate IO
+
+FE2 -> FE2: Aggiorna lo stato locale e mostra il messaggio in tempo reale
+@enduml

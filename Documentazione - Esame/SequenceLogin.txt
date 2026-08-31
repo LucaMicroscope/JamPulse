@@ -1,0 +1,33 @@
+@startuml Sequence_Login
+autonumber
+skinparam BoxPadding 10
+skinparam ParticipantPadding 10
+
+actor "Utente" as User
+participant "Frontend (React)" as FE
+participant "Backend (Express)" as BE
+database "MongoDB" as DB
+
+User -> FE: Inserisce username e password e clicca Login
+FE -> BE: POST /api/v1/auth/login {username, password}[cite: 34]
+activate BE
+
+BE -> DB: User.findOne({ username })
+activate DB
+DB --> BE: Restituisce documento utente (con password hashata)
+deactivate DB
+
+BE -> BE: user.comparePassword(password) (bcrypt)
+
+alt Credenziali valide
+    BE -> BE: jwt.sign({ userId }, JWT_SECRET, { expiresIn: '2h' })
+    BE --> FE: Restituisce 200 OK + { token, user }
+    FE -> FE: Salva il token (localStorage)
+    FE --> User: Reindirizzamento alla Home
+else Credenziali errate
+    BE --> FE: Restituisce 401 Unauthorized
+    FE --> User: Mostra messaggio di errore
+end
+
+deactivate BE
+@enduml

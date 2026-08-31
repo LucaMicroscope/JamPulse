@@ -1,0 +1,80 @@
+@startuml JamPulse_UseCase_Diagram
+
+top to bottom direction
+skinparam packageStyle rectangle
+
+actor "Ospite (Non Autenticato)" as Guest
+actor "Utente Registrato" as User
+
+rectangle "JamPulse Application" {
+
+    package "Autenticazione" {
+        usecase "Registrazione" as UC1
+        usecase "Login" as UC2
+    }
+
+    package "Gestione Profilo" {
+        usecase "Visualizza Profilo Proprio" as UC3
+        usecase "Modifica Profilo\n(Bio, Strumenti, Generi)" as UC4
+        usecase "Visualizza Altri Profili" as UC5
+        usecase "Segui / Smetti di seguire utente" as UC6
+        
+    }
+
+    package "Post" {
+        usecase "Visualizza Post" as UC8
+        usecase "Crea Nuovo Post" as UC9
+        usecase "Modifica / Elimina Post" as UC10
+        usecase "Metti / Togli Like" as UC11
+    }
+
+    package "Commenti" {
+        usecase "Visualizza Commenti" as UC12
+        usecase "Aggiungi Commento" as UC13
+        usecase "Modifica / Elimina Commento" as UC14
+    }
+
+    package "Ricerca" {
+        usecase "Cerca Musicisti\n(Filtri Strumenti e Generi)" as UC15
+        usecase "Visualizza Tutti gli Utenti" as UC16
+    }
+
+    package "Chat" {
+        usecase "Visualizza Lista Chat" as UC17
+        usecase "Crea o Recupera Chat Privata" as UC18
+        usecase "Invia / Ricevi Messaggi" as UC19
+        usecase "Elimina Chat" as UC20
+    }
+}
+
+
+
+' Collegamenti Ospite
+Guest --> UC1
+Guest --> UC2
+
+' Collegamenti Utente Registrato
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+
+User --> UC8
+User --> UC9
+User --> UC10
+User --> UC11
+User --> UC12
+User --> UC13
+User --> UC14
+User --> UC15
+User --> UC16
+User --> UC17
+User --> UC18
+User --> UC19
+User --> UC20
+
+' Relazioni opzionali di dipendenza (Include/Extend)
+UC12 ..> UC8 : <<include>>
+UC19 ..> UC17 : <<include>>
+
+@enduml
