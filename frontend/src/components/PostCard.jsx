@@ -29,7 +29,7 @@ export default function PostCard({ post, onDelete }) {
     // true se il post appartiene all'utente loggato.
     // post.userID._id è l'ID dell'autore (stringa dopo il populate del backend).
     // lo confrontiamo con user.id, l'ID dell'utente loggato salvato nel contesto.
-    const isOwner = user?.id === post.userID._id;
+    const isOwner = user?.id === post.userID?._id;
 
     // ! NUOVO: chiama DELETE /posts/:id e, se va a buon fine, notifica il padre
     // tramite onDelete così la card sparisce dalla lista senza ricaricare la pagina.
@@ -53,14 +53,14 @@ export default function PostCard({ post, onDelete }) {
                         <CardHeader
                             avatar={
                                 <Avatar
-                                    src={`https://ui-avatars.com/api/?name=${post.userID.username}`}
-                                    alt={post.userID.username}
+                                    src={`https://ui-avatars.com/api/?name=${post?.userID?.username}`}
+                                    alt={post?.userID?.username}
                                 />
                             }
                             title={
                                 <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
                                     <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                                        {post.userID.username}
+                                        {post.userID?.username}
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary">
                                         {getTimeAgo(post.createdAt)}
