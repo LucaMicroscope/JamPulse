@@ -10,10 +10,10 @@ export const useColorMode = () => useContext(ColorModeContext);
 const lightPalette = {
     mode: 'light',
     primary: {
-        main: '#0839cd', // Blu classico
+        main: '#02004d', // Blu classico
     },
     secondary: {
-        main: '#dc004e', // Rosa scuro
+        main: '#037840', // Verde scuro
     },
     background: {
         default: '#f5f5f5', // Grigio chiarissimo per lo sfondo
@@ -21,21 +21,21 @@ const lightPalette = {
     },
     text: {
         primary: '#000000',
-        secondary: '#666666',
+        secondary: '#494848',
     }
 };
 
 const darkPalette = {
     mode: 'dark',
     primary: {
-        main: '#90caf9', // Blu pastello
+        main: '#60A5FA', // Azzurro luminoso
     },
     secondary: {
-        main: '#f48fb1', // Rosa chiaro
+        main: '#4ADE80', // Verde brillante
     },
     background: {
-        default: '#121212', // Grigio quasi nero
-        paper: '#1e1e1e',   // Grigio scuro per le card e la sidebar
+        default: '#02040A',
+        paper: '#0A101D',
     },
     text: {
         primary: '#ffffff',
@@ -62,7 +62,7 @@ export default function CustomThemeProvider({ children }) {
         () =>
             createTheme({
                 palette: mode === 'light' ? lightPalette : darkPalette,
-                shape:{borderRadius:5}                              
+                shape: { borderRadius: 5 }
             }),
         [mode]
     );
