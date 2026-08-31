@@ -5,6 +5,8 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
 
 // ! NOVITÀ REAL-TIME: importiamo 'http' (modulo nativo di Node) e Server di socket.io.
 // ! Socket.IO ha bisogno di un server HTTP "grezzo" a cui agganciarsi, non può usare
@@ -42,6 +44,7 @@ app.use(express.json()); // ! questo serve per utilizzare il middleware express.
 app.use(cors({
     origin: 'http://localhost:5173'
 })); // ! questo serve per utilizzare il middleware cors che permette di accettare le richieste HTTP in arrivo dal frontend
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // * SOCKET.IO: GESTIONE CONNESSIONI REAL-TIME ----------------------------------------------------------------------------------------------------------------------------------------------
 // ! io.on('connection', ...) viene chiamato ogni volta che UN client (browser) si connette.
