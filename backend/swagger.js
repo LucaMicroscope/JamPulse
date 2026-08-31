@@ -22,8 +22,7 @@ const options = {
             { name: "Chats", description: "Gestione chat private" }
         ],
         components: {
-            securitySchemes: {
-                // Questo definisce il lucchetto verde su Swagger UI!
+            securitySchemes: {                
                 bearerAuth: {
                     type: "http",
                     scheme: "bearer",
@@ -738,7 +737,7 @@ const options = {
             }
         }
     },
-    apis: [], // Lascialo vuoto, stiamo definendo tutto qui dentro!
+    apis: [],
 };
 
 module.exports = swaggerJsdoc(options);
